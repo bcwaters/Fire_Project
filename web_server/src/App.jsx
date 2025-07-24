@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
-  // Calculate yesterday's date in YYYYMMDD format (to match existing data)
-  const today = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10).replace(/-/g, '');
+  // Calculate today's date in YYYYMMDD format
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   
   const [regionNames, setRegionNames] = useState({});
   const [loading, setLoading] = useState(true);

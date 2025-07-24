@@ -1,7 +1,7 @@
 server {
     listen 80;
-    server_name your-domain.com;
-    root /path/to/your/fire_project/web_server/dist;
+    server_name zingpng.com;
+    root /home/ubuntu/fire_project/Fire_Project/dist;
     index index.html;
 
     # Serve the React app
@@ -11,7 +11,7 @@ server {
 
     # Serve data files
     location /data/ {
-        alias /path/to/your/fire_project/data/;
+        alias /home/ubuntu/fire_project/Fire_Project/data/;
         expires 1h;
         add_header Cache-Control "public, immutable";
     }
