@@ -10,6 +10,9 @@ function RegionDetail() {
   const [regionName, setRegionName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [regionSummary, setRegionSummary] = useState(null);
+  const [summaryLoading, setSummaryLoading] = useState(true);
+  const [summaryError, setSummaryError] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -34,6 +37,36 @@ function RegionDetail() {
     fetchData();
   }, [regionId, today]);
 
+  useEffect(() => {
+    async function fetchRegionSummary() {
+      setSummaryLoading(true);
+      setSummaryError(null);
+      try {
+        const resp = await fetch(`/data/${today}/regions/region_summaries_${today}.json`);
+        if (!resp.ok) throw new Error('Region summary not found');
+        const summaryJson = await resp.json();
+        // Try to match region name (trim spaces)
+        let regionKey = regionName.trim();
+        // Some region names in the key file may have extra spaces, so try to find a close match
+        if (!summaryJson[regionKey]) {
+          // Try to find a key that matches ignoring whitespace
+          const foundKey = Object.keys(summaryJson).find(
+            k => k.replace(/\s+/g, ' ').trim() === regionKey.replace(/\s+/g, ' ').trim()
+          );
+          regionKey = foundKey || regionKey;
+        }
+        setRegionSummary(summaryJson[regionKey] || null);
+      } catch (err) {
+        setSummaryError('Could not load region summary.');
+      } finally {
+        setSummaryLoading(false);
+      }
+    }
+    if (regionName) {
+      fetchRegionSummary();
+    }
+  }, [regionName, today]);
+
   return (
     <div className="region-detail">
       <div className="region-detail-header">
@@ -48,6 +81,17 @@ function RegionDetail() {
       />
       {loading && <p>Loading region data...</p>}
       {error && <p className="error-message">{error}</p>}
+      <div className="predictive-summary-container">
+        <h2 className="predictive-summary-label">Region Summary:</h2>
+        {summaryLoading && <p className="predictive-summary-loading">Loading region summary...</p>}
+        {summaryError && <p className="predictive-summary-error">{summaryError}</p>}
+        {!summaryLoading && !summaryError && regionSummary && (
+          <pre className="predictive-summary-text">{regionSummary.join('\n')}</pre>
+        )}
+        {!summaryLoading && !summaryError && !regionSummary && (
+          <p className="predictive-summary-error">No summary available for this region.</p>
+        )}
+      </div>
     </div>
   );
 }

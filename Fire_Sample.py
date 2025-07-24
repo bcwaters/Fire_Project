@@ -6,7 +6,7 @@ import random
 import string
 import requests
 from datetime import datetime
-from visualize import visualize_region_data
+from visualize import visualize_region_data, visualize_summary_data
 
 # Optional: Only import PyPDF2 if needed
 try:
@@ -52,6 +52,23 @@ def load_text_file(file_path):
 def random_tag(length=3):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
+#Predictive Services Discussion:
+def parse_pred_services(lines, data_dir):
+    """
+    Joins all lines after the line containing 'Predictive Services' into a single string,
+    saves it to predictive_summary.txt in the data_dir, and returns the string.
+    """
+    for idx, line in enumerate(lines):
+        if 'Predictive Services' in line:
+            summary_lines = lines[idx+1:]
+            summary_str = '\n'.join(summary_lines).strip()
+            out_path = os.path.join(data_dir, 'predictive_summary.txt')
+            with open(out_path, 'w', encoding='utf-8') as f:
+                f.write(summary_str)
+            return summary_str
+    return ''
+
+
 def parse_region_table(lines, region_name):
     """
     Parses the first table after the line 'Northwest Area (PL 3)' in the provided lines.
@@ -65,7 +82,7 @@ def parse_region_table(lines, region_name):
             start_idx = i
             break
     if start_idx is None:
-        print('Region header not found.')
+        # print('Region header not found.')
         return []
     # Find the first non-empty line after the header (should be the column header)
     for j in range(start_idx+1, len(lines)):
@@ -73,7 +90,7 @@ def parse_region_table(lines, region_name):
             header_idx = j
             break
     else:
-        print('No table header found after region header.')
+        # print('No table header found after region header.')
         return []
     # Find the first occurrence of 'Incident Name' after the region header
     header_start = None
@@ -82,7 +99,7 @@ def parse_region_table(lines, region_name):
             header_start = j
             break
     if header_start is None:
-        print("'Incident Name' header not found after region header.")
+        # print("'Incident Name' header not found after region header.")
         return []
     # Collect header lines from 'Incident Name' up to and including the first line containing 'Own'
     header_lines = []
@@ -94,7 +111,7 @@ def parse_region_table(lines, region_name):
             own_line_idx = k
             break
     if own_line_idx is None:
-        print("'Own' header line not found after 'Incident Name'.")
+        # print("'Own' header line not found after 'Incident Name'.")
         return []
     # Data starts after the 'Own' line
     data_start = own_line_idx + 1
@@ -158,9 +175,9 @@ def parse_region_table(lines, region_name):
             entry[col] = ''
         data_rows.append(entry)
         k += 1
-    print('--- Parsed Region Table ---')
-    print(json.dumps(data_rows, indent=2))
-    print('--------------------------')
+    # print('--- Parsed Region Table ---')
+    # print(json.dumps(data_rows, indent=2))
+    # print('--------------------------')
     return data_rows
 
 
@@ -179,10 +196,10 @@ def parse_summary_table(file_text, data_dir, today):
         if line.strip().startswith('Total'):
             break
 
-    print('--- Lines after Total logic ---')
-    for l in summary_lines:
-        print(l)
-    print('-------------------------------')
+    # print('--- Lines after Total logic ---')
+    # for l in summary_lines:
+    #     print(l)
+    # print('-------------------------------')
 
     # Remove header lines and split into lines
     lines = [line.strip() for line in summary_lines if line.strip()]
@@ -192,10 +209,10 @@ def parse_summary_table(file_text, data_dir, today):
         if (re.match(r'^(?:[A-Z]{3,4}|Total)\b', line) and not line.startswith('GACC'))
     ]
 
-    print('--- Filtered Data Lines ---')
-    for l in data_lines:
-        print(l)
-    print('---------------------------')
+    # print('--- Filtered Data Lines ---')
+    # for l in data_lines:
+    #     print(l)
+    # print('---------------------------')
 
     # Define the columns
     columns = [
@@ -214,16 +231,49 @@ def parse_summary_table(file_text, data_dir, today):
         entry = dict(zip(columns, parts))
         result.append(entry)
 
-    print('--- Parsed Result ---')
-    print(json.dumps(result, indent=2))
-    print('---------------------')
+    # print('--- Parsed Result ---')
+    # print(json.dumps(result, indent=2))
+    # print('---------------------')
 
     # Save as JSON file
     out_filename = os.path.join(data_dir, f'fire_summary_{today}.json')
     with open(out_filename, 'w') as f:
         json.dump(result, f, indent=2)
 
-    print(f"Saved {out_filename}")
+    # print(f"Saved {out_filename}")
+    return result
+
+def parse_region_summary(lines, data_dir, today):
+    """
+    For each region header, captures the lines between the header and the first line containing 'Incident' after it.
+    Returns a dict: {region_header: [lines_between_header_and_incident]}
+    """
+    import re
+    region_header_pattern = re.compile(r"[A-Za-z ]+Area \(PL \d+\)")
+    region_map = {}
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        header_match = region_header_pattern.search(line)
+        if header_match:
+            region_header = line.strip()
+            data_lines = []
+            i += 1
+            # Collect lines until we hit a line containing 'Incident' (case-insensitive)
+            while i < len(lines) and 'Incident Name' not in lines[i]:
+                data_lines.append(lines[i])
+                i += 1
+            region_map[region_header] = data_lines
+        else:
+            i += 1
+    # Optionally, save to file
+    regions_dir = os.path.join(data_dir, 'regions')
+    os.makedirs(regions_dir, exist_ok=True)  # Ensure the directory exists
+    out_path = os.path.join(regions_dir, f"region_summaries_{today}.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        import json
+        json.dump(region_map, f, indent=2)
+    return region_map
 
 
 def detect_region(lines):
@@ -235,7 +285,7 @@ def detect_region(lines):
     found = []
     for i, line in enumerate(lines):
         if target in line and i > 0:
-            print(f'Region detected before line {i}: {lines[i-1]}')
+            # print(f'Region detected before line {i}: {lines[i-1]}')
             found.append(lines[i-1])
     return found
 
@@ -243,7 +293,7 @@ def main():
     if len(sys.argv) == 2:
         file_path = sys.argv[1]
     else:
-        print(f"No input file provided. Using default URL: {default_url}")
+        # print(f"No input file provided. Using default URL: {default_url}")
         file_path = default_url
     today = datetime.now().strftime('%Y%m%d')
     data_dir = os.path.join('data', today)
@@ -253,48 +303,55 @@ def main():
             file_path = download_pdf(file_path, save_dir=data_dir)
             ext = '.pdf'
         except Exception as e:
-            print(f"Failed to download PDF: {e}")
+            # print(f"Failed to download PDF: {e}")
             sys.exit(1)
     else:
         if not os.path.exists(file_path):
-            print(f"File not found: {file_path}")
+            # print(f"File not found: {file_path}")
             sys.exit(1)
         ext = os.path.splitext(file_path)[1].lower()
     if ext == '.pdf':
-        print(f"Extracting text from PDF: {file_path}")
+        # print(f"Extracting text from PDF: {file_path}")
         file_text = extract_text_from_pdf(file_path)
     else:
-        print(f"Loading text file: {file_path}")
+        # print(f"Loading text file: {file_path}")
         file_text = load_text_file(file_path)
 
-    parse_summary_table(file_text, data_dir, today)
+    pred_services_text = parse_pred_services(file_text.splitlines(), data_dir)
+    # print(f"Predictive Services Summary: {pred_services_text}")
 
-    print('--- Parsing Region Table ---')
-   
-    print('--- Parsed Region Table ---')
+    summary_data = parse_summary_table(file_text, data_dir, today)
+    visualize_summary_data(summary_data, f'data/{today}')
 
-    print('--- Detecting Regions ---')
+
+    # print('--- Detecting Regions ---')
     regions = detect_region(file_text.splitlines())
-    print('--- Detected Regions ---')
+    # print('--- Detected Regions ---')
     regions_dir = os.path.join(data_dir, 'regions')
     os.makedirs(regions_dir, exist_ok=True)
     region_key = {}
     for idx, r in enumerate(regions, 1):
-         print(f'--- Parsing Region Table: {r} ---')
+         # print(f'--- Parsing Region Table: {r} ---')
          region_data = parse_region_table(file_text.splitlines(), r)
+        
          # Save each region's data as a JSON file in data/TODAY/regions
-         visualize_region_data(idx, region_data, regions_dir)
+         visualize_region_data(idx, r, region_data, regions_dir)
          out_filename = os.path.join(regions_dir, f'Region_{idx}_{today}.json')
          with open(out_filename, 'w') as f:
              json.dump(region_data, f, indent=2)
-         print(f'Saved {out_filename}')
+         # print(f'Saved {out_filename}')
          region_key[str(idx)] = r
     # Save the region key as a JSON file
     key_filename = os.path.join(regions_dir, f'region_key_{today}.json')
     with open(key_filename, 'w') as f:
         json.dump(region_key, f, indent=2)
-    print(f'Saved region key: {key_filename}')
-    print('--------------------------')
+    # print(f'Saved region key: {key_filename}')
+    # print('--------------------------')
+
+        # print('--- Parsing Region Table ---')
+    region_map = parse_region_summary(file_text.splitlines(), data_dir, today)
+    # print('--- Parsed Region Table ---')
+
 
 
 if __name__ == "__main__":
