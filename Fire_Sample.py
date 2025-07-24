@@ -101,8 +101,8 @@ def parse_region_table(lines, region_name):
     header_str = ' '.join(header_lines)
     header_str = re.sub(r'\s+', ' ', header_str)
     columns = [
-        'Incident Name', 'Unit', 'Total Acres', 'Chge in Acres', '% Ctn/Comp',
-        'Est', 'Total PPL', 'Chge in PPL', 'Crw', 'Eng', 'Heli', 'Strc Lost', '$$ CTD', 'Origin', 'Own'
+        'Incident Name', 'Unit', 'Total Acres', 'Chge in Acres', '%' ,  'Ctn/Comp',
+        'Est', 'Total PPL', 'Chge in PPL', 'Crw', 'Eng', 'Heli', 'Strc Lost', '$$ CTD', 'Origin Own'
     ]
     data_rows = []
     k = data_start
