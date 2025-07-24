@@ -1,18 +1,16 @@
 import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import RegionDetail from './RegionDetail.jsx'
+import Layout from './Layout.jsx'
 import './App.css'
+import NationalSummary from './NationalSummary.jsx'
 
-function App() {
-  // Calculate today's date in YYYYMMDD format
+function Dashboard() {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  
   const [regionNames, setRegionNames] = useState({});
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  // Array of region numbers for the graphs
   const regions = [1, 2, 3, 4, 5, 6, 7, 8];
 
-  // Load region names from JSON file
   useEffect(() => {
     fetch(`data/${today}/regions/region_key_${today}.json`)
       .then(response => response.json())
@@ -26,37 +24,42 @@ function App() {
       });
   }, [today]);
 
-  // Handle image click
-  const handleImageClick = (region) => {
-    const imageUrl = `data/${today}/regions/fire_analysis_region_${region}.png`;
-    const regionName = regionNames[region] || `Region ${region}`;
-    setSelectedImage({ url: imageUrl, name: regionName });
-  };
-
-  // Close modal
-  const closeModal = () => {
-    setSelectedImage(null);
-  };
-
   if (loading) {
     return (
       <div className="app">
-        <header className="app-header">
-          <h1>Fire Analysis Dashboard</h1>
+        <main>
           <p>Loading...</p>
-        </header>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Fire Analysis Dashboard</h1>
-        <p>Fire analysis graphs for {today}</p>
-      </header>
-      
-      <main className="graphs-container">
+    <main>
+      {/* Summary Graph Row */}
+      <div className="summary-row">
+        <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/national'}>
+          <h2>National Fire Summary</h2>
+          <div className="graph-wrapper">
+            <img 
+              src={`data/${today}/fire_summary_analysis.png`}
+              alt="Fire summary analysis"
+              className="fire-graph summary-graph"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'block';
+              }}
+            />
+            <div className="error-message" style={{ display: 'none' }}>
+              <p>Summary graph not available</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Divider between summary and regions */}
+      <hr className="divider" />
+      {/* Region Graphs Container */}
+      <div className="graphs-container">
         {regions.map((region) => (
           <div key={region} className="graph-card">
             <h2>{regionNames[region] || `Region ${region}`}</h2>
@@ -65,7 +68,7 @@ function App() {
                 src={`data/${today}/regions/fire_analysis_region_${region}.png`}
                 alt={`Fire analysis for ${regionNames[region] || `Region ${region}`}`}
                 className="fire-graph"
-                onClick={() => handleImageClick(region)}
+                onClick={() => window.location.href = `/region/${region}`}
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.nextSibling.style.display = 'block';
@@ -77,28 +80,23 @@ function App() {
             </div>
           </div>
         ))}
-      </main>
-
-      {/* Modal for full image */}
-      {selectedImage && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{selectedImage.name}</h3>
-              <button className="close-button" onClick={closeModal}>×</button>
-            </div>
-            <div className="modal-body">
-              <img 
-                src={selectedImage.url} 
-                alt={selectedImage.name}
-                className="full-image"
-              />
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
+    </main>
   )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="region/:regionId" element={<RegionDetail />} />
+          <Route path="national" element={<NationalSummary />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App

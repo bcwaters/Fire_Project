@@ -1,7 +1,7 @@
 #root {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1rem;
+ 
 }
 
 .app {
@@ -11,24 +11,30 @@
 
 .app-header {
   text-align: center;
-  padding: 2rem 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  padding: 0;
+  background: #FBC02D;
+  color: #111;
   margin-bottom: 2rem;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .app-header h1 {
-  margin: 0 0 0.5rem 0;
-  font-size: 2.5rem;
+  margin: 0 0 0.25rem 0;
+  font-size: 2rem;
   font-weight: 700;
+  color: #111;
 }
 
 .app-header p {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
   opacity: 0.9;
+  color: #111;
 }
 
 .graphs-container {
@@ -167,6 +173,114 @@
   height: auto;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.summary-row {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.divider {
+  border: none;
+  border-top: 2px solid #e0e0e0;
+  margin: 2rem 0;
+  width: 100%;
+}
+
+.summary-graph {
+  max-height: 50vh;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+.region-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+ 
+}
+
+.region-detail-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.back-button {
+  font-size: 1rem;
+  padding: 0.4rem 1rem;
+  background: #FBC02D;
+  color: #111;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 1.5rem;
+}
+
+.back-button:hover {
+  background: #ffd54f;
+}
+
+.national-summary-detail img {
+  max-height: 70vh;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 2rem auto;
+}
+
+.region-detail img {
+  max-height: 70vh;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 2rem auto;
+}
+
+/* Predictive summary styles */
+.predictive-summary-container {
+  background: #fffbe7;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(251, 192, 45, 0.08);
+  padding: 2rem 1.5rem;
+  margin: 2rem auto 0 auto;
+  max-width: 800px;
+  border: 1px solid #ffe082;
+}
+.predictive-summary-text {
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.95rem;
+  color: #333;
+  white-space: pre-wrap;
+  line-height: 1.7;
+  background: none;
+  margin: 0;
+}
+.predictive-summary-loading {
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  margin: 1rem 0;
+}
+.predictive-summary-error {
+  color: #c62828;
+  font-weight: 600;
+  text-align: center;
+  margin: 1rem 0;
+}
+.predictive-summary-label {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #b28704;
+  margin-bottom: 1rem;
+  margin-top: 0;
+  letter-spacing: 0.01em;
 }
 
 /* Responsive design */
