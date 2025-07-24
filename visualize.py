@@ -7,7 +7,7 @@ def get_data(file_path):
         data = json.load(file)
     return data
 
-def visualize_data(data):
+def visualize_region_data(region, data, target_dir):
     # Extract numerical data for plotting
     incident_names = []
     total_acres = []
@@ -70,7 +70,7 @@ def visualize_data(data):
     
     # Create subplots - 4 plots with the 4th for text details
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
-    fig.suptitle('Fire Incident Analysis', fontsize=16)
+    fig.suptitle(f'Fire Incident Analysis\nRegion {region}', fontsize=16)
     
     #Plot 1: Total Acres and Containment by Incident
     x = np.arange(len(incident_names))
@@ -108,8 +108,8 @@ def visualize_data(data):
     ax2.set_xlabel('Incident')
     ax2.set_ylabel('Personnel')
     ax2.set_xticks(x)
-    # Include total personnel in x-axis labels
-    labels2 = [f"{name}: {p}" for name, p in zip(incident_names, personnel)]
+    # Include total personnel and change in x-axis labels (only show change if non-zero)
+    labels2 = [f"{name}: {p} ({c:+d})" if c != 0 else f"{name}: {p}" for name, p, c in zip(incident_names, personnel, change_personnel)]
     ax2.set_xticklabels(labels2, rotation=45, ha='right')
     ax2.legend()
     #avg_personnel = sum(personnel + change_personnel) / len(personnel + change_personnel) if (personnel + change_personnel) else 0
@@ -156,7 +156,11 @@ def visualize_data(data):
              verticalalignment='top', fontfamily='monospace', bbox=dict(boxstyle="round,pad=0.3", facecolor="lightgray", alpha=0.8))
     
     plt.tight_layout()  # Add back tight layout
-    plt.show()
+    
+    # Save the plot to a file
+    plt.savefig(f'{target_dir}/fire_analysis_region_{region}.png', dpi=300, bbox_inches='tight')
+    
+    #plt.show()
 
 data = get_data('data/20250723/regions/Region_1_20250723.json')
-visualize_data(data)
+visualize_region_data(1, data, 'data/20250723/regions')

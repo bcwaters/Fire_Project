@@ -6,6 +6,7 @@ import random
 import string
 import requests
 from datetime import datetime
+from visualize import visualize_region_data
 
 # Optional: Only import PyPDF2 if needed
 try:
@@ -282,6 +283,7 @@ def main():
          print(f'--- Parsing Region Table: {r} ---')
          region_data = parse_region_table(file_text.splitlines(), r)
          # Save each region's data as a JSON file in data/TODAY/regions
+         visualize_region_data(idx, region_data, regions_dir)
          out_filename = os.path.join(regions_dir, f'Region_{idx}_{today}.json')
          with open(out_filename, 'w') as f:
              json.dump(region_data, f, indent=2)
