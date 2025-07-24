@@ -14,7 +14,7 @@ function App() {
 
   // Load region names from JSON file
   useEffect(() => {
-    fetch(`/${today}/regions/region_key_${today}.json`)
+    fetch(`data/${today}/regions/region_key_${today}.json`)
       .then(response => response.json())
       .then(data => {
         setRegionNames(data);
@@ -28,7 +28,7 @@ function App() {
 
   // Handle image click
   const handleImageClick = (region) => {
-    const imageUrl = `/${today}/regions/fire_analysis_region_${region}.png`;
+    const imageUrl = `data/${today}/regions/fire_analysis_region_${region}.png`;
     const regionName = regionNames[region] || `Region ${region}`;
     setSelectedImage({ url: imageUrl, name: regionName });
   };
@@ -62,7 +62,7 @@ function App() {
             <h2>{regionNames[region] || `Region ${region}`}</h2>
             <div className="graph-wrapper">
               <img 
-                src={`/${today}/regions/fire_analysis_region_${region}.png`}
+                src={`data/${today}/regions/fire_analysis_region_${region}.png`}
                 alt={`Fire analysis for ${regionNames[region] || `Region ${region}`}`}
                 className="fire-graph"
                 onClick={() => handleImageClick(region)}
