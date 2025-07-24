@@ -161,6 +161,3 @@ def visualize_region_data(region, data, target_dir):
     plt.savefig(f'{target_dir}/fire_analysis_region_{region}.png', dpi=300, bbox_inches='tight')
     
     #plt.show()
-
-data = get_data('data/20250723/regions/Region_1_20250723.json')
-visualize_region_data(1, data, 'data/20250723/regions')
