@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom'
 import RegionDetail from './RegionDetail.jsx'
 import Layout from './Layout.jsx'
 import './App.css'
@@ -23,6 +23,7 @@ function Dashboard({ regionNames }) {
   const [summaryLoading, setSummaryLoading] = useState(true);
   const navigate = useNavigate();
   const [selectedRegion, setSelectedRegion] = useState(null);
+  const params = useParams(); // <-- Add this line
 
 
   const handleRegionSelect = (region) => {
@@ -36,7 +37,7 @@ function Dashboard({ regionNames }) {
     if (params.region) {
       navigate(`/region/${params.region}`);
     }else{
-      setRegionSelected("");
+      setSelectedRegion(""); // <-- Fix function name
     }
   }, [params.region]);
 
@@ -83,15 +84,15 @@ function Dashboard({ regionNames }) {
     <main>
       {/* Daily Summary Block */}
       <div className="daily-summary-block hide-on-mobile">
-        <h2>Daily National Fire Summary <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704'}}>&mdash; {todayPrettyMDT} MDT</span></h2>
-        <p> <span style={{ fontSize: '0.8em' }}>updated daily at 8:30am MDT</span></p>
+        <h2 style={{ margin: '0 0 0 5px' }}>Daily National Fire Summary <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704', marginLeft: '5px'}}>{todayPrettyMDT} MDT</span></h2>
+        <p style={{ margin: '0 0 0 5px', padding: 0}}> <span style={{ fontSize: '0.8em' }}>updated daily at 8:30am MDT</span></p>
         {/* Comp fires block is not displayed */}
         <pre style={{ whiteSpace: 'pre-wrap', background: '#f9f9f9', padding: '1em', borderRadius: '8px', border: '1px solid #eee' }}>{summary}</pre>
       </div>
       {/* Summary Graph Row */}
       <div className="summary-row">
         <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
-          <h2>National Fire Summary <span style={{fontSize: '1rem', fontWeight: 400, color: '#555', paddingLeft: '1rem'}}> {todayPrettyMDT} MDT</span></h2>
+          <h2>National Fire Summary</h2>
           <div className="graph-wrapper">
             <img 
               src={`data/${today}/fire_summary_analysis.png`}
@@ -115,7 +116,7 @@ function Dashboard({ regionNames }) {
       <div className="graphs-container">
         {regions.map((region) => (
           <div key={region} className="graph-card">
-            <h2>{regionNames[region] || `Region ${region}`} <span style={{fontSize: '.91rem', fontWeight: 400, color: '#555', paddingLeft: '1rem'}}>  {todayPrettyMDT} MDT</span></h2>
+            <h2>{regionNames[region] || `Region ${region}`}</h2>
             <div className="graph-wrapper">
               <img 
                 src={`data/${today}/regions/fire_analysis_region_${region}.png`}

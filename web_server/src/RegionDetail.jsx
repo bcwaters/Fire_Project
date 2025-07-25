@@ -80,16 +80,21 @@ function RegionDetail() {
   }, [regionName, today]);
 
   return (
+    <div>
+    <div style={{ width: '100vw', display: 'flex', justifyContent: 'flex-start' }}>
+    <button className="back-button" onClick={() => navigate('/')}>← Home</button>
+  </div>
     <div className="region-detail">
+
       <div className="region-detail-header">
-        <h1 className="region-detail-title">Fire Analysis for {regionName} <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704'}}>&mdash; {todayPrettyMDT} MDT</span></h1>
-        <button className="back-button" onClick={() => navigate('/')}>← Back to Home Page</button>
+
+        <h1 className="region-detail-title">Fire Analysis for {regionName} <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
+
       </div>
       <img
         src={`/data/${today}/regions/fire_analysis_region_${regionId}.png`}
         alt={`Fire analysis for ${regionName}`}
-        className="full-image"
-        style={{ maxWidth: '100%', margin: '2rem 0', cursor: 'zoom-in' }}
+        className="full-image region-zoomable-image"
         onClick={() => setModalOpen(true)}
       />
       {modalOpen && (
@@ -125,6 +130,7 @@ function RegionDetail() {
           <p className="predictive-summary-error">No summary available for this region.</p>
         )}
       </div>
+    </div>
     </div>
   );
 }

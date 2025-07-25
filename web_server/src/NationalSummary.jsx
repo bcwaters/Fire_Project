@@ -40,16 +40,19 @@ function NationalSummary() {
   }, [today]);
 
   return (
+    <div>
+    <div style={{ width: '100vw', display: 'flex', justifyContent: 'flex-start' }}>
+    <button className="back-button" onClick={() => navigate('/')}>← Home</button>
+  </div>
     <div className="national-summary-detail">
       <div className="region-detail-header">
-        <h1 className="region-detail-title">National Fire Summary <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704'}}>&mdash; {todayPrettyMDT} MDT</span></h1>
-        <button className="back-button" onClick={() => navigate('/')}>← Back to Dashboard</button>
+        <h1 className="region-detail-title">National Fire Summary <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
+
       </div>
       <img
         src={`data/${today}/fire_summary_analysis.png`}
         alt="National fire summary analysis"
-        className="full-image"
-        style={{ maxWidth: '100%', margin: '2rem 0', cursor: 'zoom-in' }}
+        className="full-image zoomable-image"
         onClick={() => setModalOpen(true)}
       />
       {modalOpen && (
@@ -80,6 +83,7 @@ function NationalSummary() {
           <pre className="predictive-summary-text">{summary}</pre>
         )}
       </div>
+    </div>
     </div>
   );
 }

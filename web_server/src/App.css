@@ -1,6 +1,7 @@
 #root {
   max-width: 1400px;
   margin: 0 auto;
+  width: 100vw;
  
 }
 
@@ -18,7 +19,7 @@
   padding: 5;
   background: #FBC02D;
   color: #111;
-  margin-bottom: 2rem;
+
   border-radius: 0px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   height: 100px;
@@ -220,20 +221,35 @@
   color: #333;
 }
 
+@media (max-width: 768px) {
+  .region-detail-title {
+    font-size: 0.9rem;
+  }
+}
+
 .back-button {
   font-size: 1rem;
   padding: 0.4rem 1rem;
-  background: #FBC02D;
+  background: #FB8C00;
   color: #111;
   border: none;
-  border-radius: 6px;
+  border-radius: 0px;
   cursor: pointer;
   transition: background 0.2s;
-  margin-left: 1.5rem;
+ 
 }
 
 .back-button:hover {
   background: #ffd54f;
+}
+
+@media (max-width: 768px) {
+  .back-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+  }
 }
 
 .national-summary-detail img {
@@ -299,9 +315,13 @@
     gap: 1.5rem;
     padding: 0 0.5rem;
   }
+
+  .app-header {
+    height: 40px;
+  }
   
   .app-header h1 {
-    font-size: 2rem;
+    font-size: .8rem;
   }
   
   .app-header p {
@@ -335,6 +355,10 @@
   .hide-on-mobile {
     display: none !important;
   }
+  
+  .dashboard-title-navigated {
+    display: none !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -343,12 +367,17 @@
   }
   
   .app-header {
-    padding: 1.5rem 0;
-    margin-bottom: 1.5rem;
+ 
+  
   }
   
+  .header-row {
+    padding-left: 0;
+    padding-right: 0;
+  
+  }
   .app-header h1 {
-    font-size: 1.75rem;
+    font-size: .91.2rem;
   }
   
   .graph-card h2 {
@@ -373,15 +402,23 @@
   }
 }
 
-.region-dropdown {
-  background: #fffbe6;
-  color: #333;
-  border: 1.5px solid #fbc02d;
-  border-radius: 8px;
-  padding: 0.5em 1.2em 0.5em 0.8em;
-  font-size: 1.05em;
+.region-dropdown-option {
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: .9em;
   font-weight: 500;
-  width: 200px;
+  background-color: #EFEFEF;
+  border-radius: 0;
+}
+
+.region-dropdown {
+  background: #EFEFEF;
+  color: #333;
+  border: 1.5px solid #444444;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  padding: 0.5em 1.2em 0.5em 0.8em;
+  font-size: .9em;
+  font-weight: 500;
+  width: 150px;
   box-shadow: 0 2px 8px rgba(251, 192, 45, 0.10);
   outline: none;
   margin-left: 1.5rem;
@@ -396,8 +433,8 @@
 
 @media (max-width: 768px) {
   .region-dropdown {
-    width: 70vw;
-    max-width: 200px;
+  
+    width: 150px;
     display: block;
     margin: 1rem auto 0 auto;
     font-size: 1.05em;
@@ -409,8 +446,8 @@
   .app-header {
     flex-direction: column;
     align-items: stretch;
-    height: auto;
-    padding: 1.5rem 0;
+ 
+ 
   }
   .app-header h1, .app-header p {
     margin-right: 0;
@@ -418,9 +455,9 @@
   }
   .region-dropdown {
     margin: 1rem auto 0 auto;
-    width: 70vw;
-    max-width: 200px;
+    width: 150px;
     display: block;
+ 
   }
 }
 
@@ -445,7 +482,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  max-width: 100vw;
   gap: 2rem;
   padding-left: 2rem;
   padding-right: 2rem;
@@ -464,7 +501,141 @@
     padding-right: 1rem;
   }
   .header-row h1 {
+    font-size: 1.0rem;
+    margin-top: 1rem;
     text-align: center;
+    cursor: pointer;
   }
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+.dashboard-title h1{
+  cursor: pointer;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: .7em;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.dashboard-title:hover {
+  color: #b28704;
+}
+
+.zoomable-image {
+  display: block;
+  margin: 2rem auto;
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.region-zoomable-image {
+  display: block;
+  max-width: 100%;
+  margin: 2rem auto;
+  cursor: pointer;
+}
+
+/* Hide hamburger on desktop, show on mobile */
+.region-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #333;
+  margin-left: 1.5rem;
+}
+
+/* Hide select on mobile, show on desktop */
+.hide-on-mobile {
+  display: initial;
+}
+.hide-on-desktop {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .region-hamburger {
+    display: block;
+    position: absolute;
+    top: .1rem;
+    right: 1rem;
+    padding: 0;
+    margin: 0;
+    z-index: 1100;
+  }
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .hide-on-desktop {
+    display: block !important;
+  }
+  .header-row {
+    position: relative;
+  }
+}
+
+/* Modal overlay for mobile region select */
+.region-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.region-modal {
+  background: #fff;
+  border-radius: 10px;
+  max-width: 90vw;
+  width: 320px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 1.5rem 1rem;
+  position: relative;
+}
+.region-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.region-modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #333;
+  cursor: pointer;
+  padding: 0 0.5rem;
+  line-height: 1;
+}
+.region-modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.region-modal-option {
+  width: 100%;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.region-modal-option:hover {
+  background: #ffe082;
 }
 
