@@ -88,12 +88,12 @@ function RegionDetail() {
 
       <div className="region-detail-header">
 
-        <h1 className="region-detail-title">Fire Analysis for {regionName} <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
+        <h1 className="region-detail-title"> {regionName} <span style={{fontSize: '.5rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
 
       </div>
       <img
         src={`/data/${today}/regions/fire_analysis_region_${regionId}.png`}
-        alt={`Fire analysis for ${regionName}`}
+        alt={`Fire analysis for ${regionName} ${todayPrettyMDT} MDT`}
         className="full-image region-zoomable-image"
         onClick={() => setModalOpen(true)}
       />

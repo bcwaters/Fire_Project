@@ -46,7 +46,7 @@ function NationalSummary() {
   </div>
     <div className="national-summary-detail">
       <div className="region-detail-header">
-        <h1 className="region-detail-title">National Fire Summary <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
+        <h1 className="region-detail-title">National Fire Summary <span style={{fontSize: '.5rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
 
       </div>
       <img

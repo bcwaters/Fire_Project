@@ -49,7 +49,7 @@ function Layout() {
           )}
           {/* Desktop dropdown */}
           <select onChange={handleRegionChange} value={selectedRegion} className="region-dropdown hide-on-mobile">
-            <option value="" disabled>View Region</option>
+            <option value="" disabled>Region</option>
             {regions.map(region => (
               <option key={region} value={region} className="region-dropdown-option">
                 {regionNames[region] || `Region ${region}`}
@@ -57,9 +57,15 @@ function Layout() {
             ))}
           </select>
           {/* Mobile hamburger */}
-          <button className="region-hamburger hide-on-desktop" onClick={handleMobileMenuOpen} aria-label="Select region">
-            &#9776;
-          </button>
+          <select onChange={handleRegionChange} value={selectedRegion} className="region-dropdown hide-on-desktop">
+            <option value="" disabled>Region</option>
+            {regions.map(region => (
+              <option key={region} value={region} className="region-dropdown-option">
+                {regionNames[region] || `Region ${region}`}
+              </option>
+            ))}
+          </select>
+  
         </div>
       </header>
       {/* Mobile modal */}

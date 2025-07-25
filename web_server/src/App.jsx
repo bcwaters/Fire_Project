@@ -115,7 +115,7 @@ function Dashboard({ regionNames }) {
       {/* Region Graphs Container */}
       <div className="graphs-container">
         {regions.map((region) => (
-          <div key={region} className="graph-card">
+          <div key={region}   onClick={() => navigate(`/region/${region}`)} className="graph-card">
             <h2>{regionNames[region] || `Region ${region}`}</h2>
             <div className="graph-wrapper">
               <img 
