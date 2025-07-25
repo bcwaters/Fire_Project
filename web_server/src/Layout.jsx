@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 function Layout() {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const [regionNames, setRegionNames] = useState({});
-  const regions = [1, 2, 3, 4, 5, 6, 7, 8];
+  const regions = [1, 2, 3, 4, 5, 6, 7];
   const location = useLocation();
   const navigate = useNavigate();
 

@@ -29,7 +29,16 @@ function Dashboard({ regionNames }) {
     setSelectedRegion(region);
   }
 
-  const regions = [1, 2, 3, 4, 5, 6, 7, 8];
+  //TODO dynamically load regions from region_key_${today}.json
+  const regions = [1, 2, 3, 4, 5, 6, 7];
+
+  useEffect(() => {
+    if (params.region) {
+      navigate(`/region/${params.region}`);
+    }else{
+      setRegionSelected("");
+    }
+  }, [params.region]);
 
   useEffect(() => {
     fetch(`data/${today}/daily_summary.json`)
