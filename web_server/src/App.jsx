@@ -1,30 +1,35 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import RegionDetail from './RegionDetail.jsx'
 import Layout from './Layout.jsx'
 import './App.css'
 import NationalSummary from './NationalSummary.jsx'
 
-function Dashboard() {
+function getTodayMDTPretty() {
+  const mdtDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Denver' }));
+  return mdtDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'America/Denver'
+  });
+}
+
+function Dashboard({ regionNames }) {
+  const todayPrettyMDT = getTodayMDTPretty();
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  const [regionNames, setRegionNames] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // regionNames now comes from props
   const [summary, setSummary] = useState('');
   const [summaryLoading, setSummaryLoading] = useState(true);
-  const regions = [1, 2, 3, 4, 5, 6, 7, 8];
+  const navigate = useNavigate();
+  const [selectedRegion, setSelectedRegion] = useState(null);
 
-  useEffect(() => {
-    fetch(`data/${today}/regions/region_key_${today}.json`)
-      .then(response => response.json())
-      .then(data => {
-        setRegionNames(data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error loading region names:', error);
-        setLoading(false);
-      });
-  }, [today]);
+
+  const handleRegionSelect = (region) => {
+    setSelectedRegion(region);
+  }
+
+  const regions = [1, 2, 3, 4, 5, 6, 7, 8];
 
   useEffect(() => {
     fetch(`data/${today}/daily_summary.json`)
@@ -69,19 +74,21 @@ function Dashboard() {
     <main>
       {/* Daily Summary Block */}
       <div className="daily-summary-block hide-on-mobile">
-        <h2>Daily National Fire Summary</h2>
+        <h2>Daily National Fire Summary <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704'}}>&mdash; {todayPrettyMDT} MDT</span></h2>
+        <p> <span style={{ fontSize: '0.8em' }}>updated daily at 8:30am MDT</span></p>
         {/* Comp fires block is not displayed */}
         <pre style={{ whiteSpace: 'pre-wrap', background: '#f9f9f9', padding: '1em', borderRadius: '8px', border: '1px solid #eee' }}>{summary}</pre>
       </div>
       {/* Summary Graph Row */}
       <div className="summary-row">
-        <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/national'}>
-          <h2>National Fire Summary</h2>
+        <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
+          <h2>National Fire Summary <span style={{fontSize: '1rem', fontWeight: 400, color: '#555', paddingLeft: '1rem'}}> {todayPrettyMDT} MDT</span></h2>
           <div className="graph-wrapper">
             <img 
               src={`data/${today}/fire_summary_analysis.png`}
               alt="Fire summary analysis"
               className="fire-graph summary-graph"
+              onClick={() => navigate('/national')}
               onError={(e) => {
                 e.target.style.display = 'none';
                 e.target.nextSibling.style.display = 'block';
@@ -99,13 +106,13 @@ function Dashboard() {
       <div className="graphs-container">
         {regions.map((region) => (
           <div key={region} className="graph-card">
-            <h2>{regionNames[region] || `Region ${region}`}</h2>
+            <h2>{regionNames[region] || `Region ${region}`} <span style={{fontSize: '.91rem', fontWeight: 400, color: '#555', paddingLeft: '1rem'}}>  {todayPrettyMDT} MDT</span></h2>
             <div className="graph-wrapper">
               <img 
                 src={`data/${today}/regions/fire_analysis_region_${region}.png`}
                 alt={`Fire analysis for ${regionNames[region] || `Region ${region}`}`}
                 className="fire-graph"
-                onClick={() => window.location.href = `/region/${region}`}
+                onClick={() => navigate(`/region/${region}`)}
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.nextSibling.style.display = 'block';
@@ -123,11 +130,39 @@ function Dashboard() {
 }
 
 function App() {
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const [regionNames, setRegionNames] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`data/${today}/regions/region_key_${today}.json`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("region names loaded:", data);
+        setRegionNames(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error loading region names:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="app">
+        <main>
+          <p>Loading...</p>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
+        <Route path="/" element={<Layout regionNames={regionNames} />}>
+          <Route index element={<Dashboard regionNames={regionNames} />} />
           <Route path="region/:regionId" element={<RegionDetail />} />
           <Route path="national" element={<NationalSummary />} />
         </Route>

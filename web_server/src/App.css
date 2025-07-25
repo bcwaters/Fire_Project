@@ -10,7 +10,11 @@
 }
 
 .app-header {
-  text-align: center;
+  /* text-align: center; */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   padding: 5;
   background: #FBC02D;
   color: #111;
@@ -18,9 +22,10 @@
   border-radius: 0px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   height: 100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+}
+
+.app-header h1, .app-header p {
+  margin-right: 2rem;
 }
 
 .app-header h1 {
@@ -195,6 +200,10 @@
   display: block;
   margin: 0 auto;
 }
+.region-detail{
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
 
 .region-detail-header {
   display: flex;
@@ -330,7 +339,7 @@
 
 @media (max-width: 480px) {
   #root {
-    padding: 0.5rem;
+    
   }
   
   .app-header {
@@ -361,6 +370,101 @@
 
   .modal-body {
     padding: 0.75rem;
+  }
+}
+
+.region-dropdown {
+  background: #fffbe6;
+  color: #333;
+  border: 1.5px solid #fbc02d;
+  border-radius: 8px;
+  padding: 0.5em 1.2em 0.5em 0.8em;
+  font-size: 1.05em;
+  font-weight: 500;
+  width: 200px;
+  box-shadow: 0 2px 8px rgba(251, 192, 45, 0.10);
+  outline: none;
+  margin-left: 1.5rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.region-dropdown:focus, .region-dropdown:hover {
+  border-color: #ffb300;
+  box-shadow: 0 4px 12px rgba(251, 192, 45, 0.18);
+}
+
+@media (max-width: 768px) {
+  .region-dropdown {
+    width: 70vw;
+    max-width: 200px;
+    display: block;
+    margin: 1rem auto 0 auto;
+    font-size: 1.05em;
+    padding: 0.6em 1em 0.6em 0.8em;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 1.5rem 0;
+  }
+  .app-header h1, .app-header p {
+    margin-right: 0;
+    text-align: center;
+  }
+  .region-dropdown {
+    margin: 1rem auto 0 auto;
+    width: 70vw;
+    max-width: 200px;
+    display: block;
+  }
+}
+
+.daily-summary-block{
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.daily-summary-block h2,
+.daily-summary-block p {
+  margin-left: 2rem;
+}
+
+@media (max-width: 768px) {
+  .daily-summary-block h2,
+  .daily-summary-block p {
+    margin-left: 0.5rem;
+  }
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.header-row h1 {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .header-row h1 {
+    text-align: center;
   }
 }
 
