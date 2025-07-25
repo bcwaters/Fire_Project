@@ -31,6 +31,20 @@ function Dashboard() {
       .then(response => response.json())
       .then(data => {
         let cleanSummary = data.summary.replace(/Understanding the IMSR\s*/g, '').replace(/IMSR Map\s*/g, '');
+        // Remove the Comp fires block
+        const compFiresRegex = /Fires not managed under a full suppression strategy[\s\S]*?can be found in the NWCG glossary  or here/;
+        cleanSummary = cleanSummary.replace(compFiresRegex, '').trim();
+        // Filter out lines with 3 or fewer characters
+        cleanSummary = cleanSummary
+          .split('\n')
+          // Trim leading spaces from each line
+          .map(line => line.trimStart())
+          .filter(line => line.trim().length > 3)
+          // Add a new line after 'NIMOs committed:'
+          .flatMap(line =>
+            line.includes('NIMOs committed:') ? [line, ''] : [line]
+          )
+          .join('\n');
         setSummary(cleanSummary);
         setSummaryLoading(false);
       })
@@ -56,6 +70,7 @@ function Dashboard() {
       {/* Daily Summary Block */}
       <div className="daily-summary-block hide-on-mobile">
         <h2>Daily National Fire Summary</h2>
+        {/* Comp fires block is not displayed */}
         <pre style={{ whiteSpace: 'pre-wrap', background: '#f9f9f9', padding: '1em', borderRadius: '8px', border: '1px solid #eee' }}>{summary}</pre>
       </div>
       {/* Summary Graph Row */}
