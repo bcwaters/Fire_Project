@@ -8,7 +8,7 @@ def get_data(file_path):
     return data
 
 
-def visualize_summary_data(data, target_dir):
+def visualize_summary_data(data, target_dir, header_data):
     # Extract numerical data for plotting
     incident_names = []
     total_acres = []
@@ -61,7 +61,7 @@ def visualize_summary_data(data, target_dir):
 
     # Create subplots - 4 plots with the 4th for text details
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
-    fig.suptitle('National Fire Summary Analysis', fontsize=16)
+    fig.suptitle(f'National Fire Summary Analysis\n{header_data["header"][1]}', fontsize=16)
 
     x = np.arange(len(incident_names))
     width = 0.35
@@ -116,7 +116,7 @@ def visualize_summary_data(data, target_dir):
     plt.savefig(f'{target_dir}/fire_summary_analysis.png', dpi=300, bbox_inches='tight')
     #plt.show()
 
-def visualize_region_data(idx, region, data, target_dir):
+def visualize_region_data(idx, region, data, target_dir, header_data):
     # Extract numerical data for plotting
     incident_names = []
     total_acres = []
@@ -179,7 +179,7 @@ def visualize_region_data(idx, region, data, target_dir):
     
     # Create subplots - 4 plots with the 4th for text details
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
-    fig.suptitle(f'Fire Incident Analysis\nRegion {region}', fontsize=16)
+    fig.suptitle(f'Fire Incident Analysis\nRegion {region}\n{header_data["header"][1]}', fontsize=16)
     
     #Plot 1: Total Acres and Containment by Incident
     x = np.arange(len(incident_names))

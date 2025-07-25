@@ -290,6 +290,34 @@ def detect_region(lines):
             found.append(lines[i-1])
     return found
 
+def extract_header_and_summary(file_text, data_dir, today):
+    """
+    Extracts the header (first three lines), the summary (lines after header up to 'Active Incident Resource Summary'),
+    and stores them along with the current date in a JSON file named daily_summary.json in data_dir.
+    """
+    lines = file_text.splitlines()
+    header = lines[:3]
+    # Find the index of the 'Active Incident Resource Summary' line
+    summary_end_idx = None
+    for idx, line in enumerate(lines[3:], start=3):
+        if 'Active Incident Resource Summary' in line:
+            summary_end_idx = idx
+            break
+    if summary_end_idx is not None:
+        summary_lines = lines[3:summary_end_idx]
+    else:
+        summary_lines = lines[3:]
+    summary = '\n'.join(summary_lines).strip()
+    header_dict = {
+        'header': header,
+        'summary': summary,
+        'date': today
+    }
+    out_path = os.path.join(data_dir, 'daily_summary.json')
+    with open(out_path, 'w', encoding='utf-8') as f:
+        json.dump(header_dict, f, indent=2)
+    return header_dict
+
 def main():
     if len(sys.argv) == 2:
         file_path = sys.argv[1]
@@ -320,11 +348,14 @@ def main():
         # print(f"Loading text file: {file_path}")
         file_text = load_text_file(file_path)
 
+    # Extract and save header and summary
+    header_data = extract_header_and_summary(file_text, data_dir, today)
+
     pred_services_text = parse_pred_services(file_text.splitlines(), data_dir)
     # print(f"Predictive Services Summary: {pred_services_text}")
 
     summary_data = parse_summary_table(file_text, data_dir, today)
-    visualize_summary_data(summary_data, f'data/{today}')
+    visualize_summary_data(summary_data, f'data/{today}', header_data)
 
 
     # print('--- Detecting Regions ---')
@@ -338,7 +369,7 @@ def main():
          region_data = parse_region_table(file_text.splitlines(), r)
         
          # Save each region's data as a JSON file in data/TODAY/regions
-         visualize_region_data(idx, r, region_data, regions_dir)
+         visualize_region_data(idx, r, region_data, regions_dir, header_data)
          out_filename = os.path.join(regions_dir, f'Region_{idx}_{today}.json')
          with open(out_filename, 'w') as f:
              json.dump(region_data, f, indent=2)

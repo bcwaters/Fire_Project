@@ -9,6 +9,8 @@ function Dashboard() {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const [regionNames, setRegionNames] = useState({});
   const [loading, setLoading] = useState(true);
+  const [summary, setSummary] = useState('');
+  const [summaryLoading, setSummaryLoading] = useState(true);
   const regions = [1, 2, 3, 4, 5, 6, 7, 8];
 
   useEffect(() => {
@@ -24,7 +26,22 @@ function Dashboard() {
       });
   }, [today]);
 
-  if (loading) {
+  useEffect(() => {
+    fetch(`data/${today}/daily_summary.json`)
+      .then(response => response.json())
+      .then(data => {
+        let cleanSummary = data.summary.replace(/Understanding the IMSR\s*/g, '').replace(/IMSR Map\s*/g, '');
+        setSummary(cleanSummary);
+        setSummaryLoading(false);
+      })
+      .catch(error => {
+        console.error('Error loading daily summary:', error);
+        setSummary('Summary not available.');
+        setSummaryLoading(false);
+      });
+  }, [today]);
+
+  if (loading || summaryLoading) {
     return (
       <div className="app">
         <main>
@@ -36,6 +53,11 @@ function Dashboard() {
 
   return (
     <main>
+      {/* Daily Summary Block */}
+      <div className="daily-summary-block hide-on-mobile">
+        <h2>Daily National Fire Summary</h2>
+        <pre style={{ whiteSpace: 'pre-wrap', background: '#f9f9f9', padding: '1em', borderRadius: '8px', border: '1px solid #eee' }}>{summary}</pre>
+      </div>
       {/* Summary Graph Row */}
       <div className="summary-row">
         <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/national'}>
