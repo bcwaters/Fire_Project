@@ -11,13 +11,13 @@
 
 .app-header {
   text-align: center;
-  padding: 0;
+  padding: 5;
   background: #FBC02D;
   color: #111;
   margin-bottom: 2rem;
-  border-radius: 10px;
+  border-radius: 0px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  height: 80px;
+  height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
