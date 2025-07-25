@@ -200,7 +200,7 @@ def parse_summary_table(file_text, data_dir, today):
     # Parse each data line
     result = []
     for line in data_lines:
-        print(f"Parsing line: {line}")  # Debug print
+        #print(f"Parsing line: {line}")  # Debug print
         tokens = line.split()
         # Extract the last 7 columns in reverse order
         if len(tokens) < 8:
