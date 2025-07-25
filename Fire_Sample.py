@@ -140,40 +140,16 @@ def parse_region_table(lines, region_name):
         # Stop if we hit another region, a summary line, or 'Great Basin Area (PL 4)'
         if re.match(r'^[A-Z][a-z]+ Area', line) or line.startswith('Total') or line == 'Great Basin Area (PL 4)':
             break
-        # Replace all occurrences of '---' with 'NAN'
-        #line = line.replace('---', 'NAN')
-        # Split the line by whitespace
         tokens = line.split()
-        # Find the index of the first numeric token
-        num_idx = None
-        for idx, tok in enumerate(tokens):
-            # Remove commas for numeric check
-            tok_clean = tok.replace(',', '')
-            if tok_clean.replace('.', '', 1).isdigit():
-                num_idx = idx
-                break
-        # Validation: count numeric words in the line
-        numeric_count = sum(
-            1 for tok in tokens if tok.replace(',', '').replace('.', '', 1).isdigit()
-        )
-        if numeric_count < 4:
+        if len(tokens) < len(columns):
             k += 1
-            continue  # Skip lines with fewer than 4 numeric words
-        if num_idx is not None and num_idx > 0:
-            unit = tokens[num_idx - 1]
-            incident_name = ' '.join(tokens[:num_idx - 1])
-            rest = tokens[num_idx:]
-        else:
-            # Fallback: treat first token as incident name
-            incident_name = tokens[0] if tokens else ''
-            unit = tokens[1] if len(tokens) > 1 else ''
-            rest = tokens[2:] if len(tokens) > 2 else []
-        entry = {columns[0]: incident_name, columns[1]: unit}
-        for col, val in zip(columns[2:], rest):
-            entry[col] = val
-        # Pad missing columns
-        for col in columns[2+len(rest):]:
-            entry[col] = ''
+            continue
+        # Traverse from the end, assign last N tokens to columns, rest to Incident Name
+        entry = {}
+        for i, col in enumerate(reversed(columns[1:])):
+            entry[columns[-(i+1)]] = tokens[-(i+1)]
+        incident_name_tokens = tokens[:len(tokens)-(len(columns)-1)]
+        entry[columns[0]] = ' '.join(incident_name_tokens)
         data_rows.append(entry)
         k += 1
     # print('--- Parsed Region Table ---')
@@ -224,12 +200,30 @@ def parse_summary_table(file_text, data_dir, today):
     # Parse each data line
     result = []
     for line in data_lines:
-        # Split by whitespace, but keep numbers with commas together
-        parts = re.findall(r'(?:[A-Z]{3,4}|Total)|\d{1,3}(?:,\d{3})*|-?\d+', line)
-        # Pad with zeros if missing columns
-        while len(parts) < len(columns):
-            parts.append("0")
-        entry = dict(zip(columns, parts))
+        print(f"Parsing line: {line}")  # Debug print
+        tokens = line.split()
+        # Extract the last 7 columns in reverse order
+        if len(tokens) < 8:
+            # Not enough tokens, skip this line
+            continue
+        change_in_personnel = tokens[-1]
+        total_personnel = tokens[-2]
+        helicopters = tokens[-3]
+        engines = tokens[-4]
+        crews = tokens[-5]
+        cumulative_acres = tokens[-6]
+        incidents = tokens[-7]
+        gacc = ' '.join(tokens[:-7])
+        entry = {
+            "GACC": gacc,
+            "Incidents": incidents,
+            "Cumulative Acres": cumulative_acres,
+            "Crews": crews,
+            "Engines": engines,
+            "Helicopters": helicopters,
+            "Total Personnel": total_personnel,
+            "Change in Personnel": change_in_personnel
+        }
         result.append(entry)
 
     # print('--- Parsed Result ---')
