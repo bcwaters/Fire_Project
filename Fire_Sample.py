@@ -7,6 +7,7 @@ import string
 import requests
 from datetime import datetime
 from visualize import visualize_region_data, visualize_summary_data
+import shutil
 
 # Optional: Only import PyPDF2 if needed
 try:
@@ -297,6 +298,8 @@ def main():
         file_path = default_url
     today = datetime.now().strftime('%Y%m%d')
     data_dir = os.path.join('data', today)
+    if os.path.exists(data_dir):
+        shutil.rmtree(data_dir)
     os.makedirs(data_dir, exist_ok=True)
     if is_url(file_path):
         try:
