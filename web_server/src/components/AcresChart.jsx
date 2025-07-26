@@ -70,10 +70,16 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     });
 
   chartGroup.append('g')
+    .attr('class', 'y-axis')
     .attr('transform', `translate(${internalMargin.left},${internalMargin.top})`)
     .call(d3.axisLeft(y))
     .selectAll('text')
     .style('font-size', axisFontSize);
+
+  // Make y-axis lines much thinner
+  chartGroup.selectAll('.y-axis .domain, .y-axis .tick line')
+    .style('stroke-width', '0.1px')
+    .attr('stroke-width', '0.1px');
 
   // Add labels
   chartGroup.append('text')

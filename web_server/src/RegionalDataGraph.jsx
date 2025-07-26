@@ -12,7 +12,21 @@ const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => 
       return;
     }
 
-    const svgData = new XMLSerializer().serializeToString(svgElement);
+    // Clone the SVG to avoid modifying the displayed version
+    const clonedSvg = svgElement.cloneNode(true);
+    
+    // Set a reasonable fixed width for download (1200px is a good standard width)
+    const downloadWidth = 1200;
+    const downloadHeight = 700;
+    
+    clonedSvg.setAttribute('width', downloadWidth);
+    clonedSvg.setAttribute('height', downloadHeight);
+    clonedSvg.setAttribute('viewBox', `0 0 ${downloadWidth} ${downloadHeight}`);
+    
+    // Remove any CSS classes that might affect the download
+    clonedSvg.removeAttribute('class');
+    
+    const svgData = new XMLSerializer().serializeToString(clonedSvg);
     const blob = new Blob([svgData], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);
     

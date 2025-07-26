@@ -6,6 +6,7 @@ import fireGraphIcon from './assets/fire_graph_icon.png';
 function Layout() {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const [regionNames, setRegionNames] = useState({});
+  const [loading, setLoading] = useState(true);
   const regions = [1, 2, 3, 4, 5, 6, 7];
   const location = useLocation();
   const navigate = useNavigate();
@@ -14,9 +15,18 @@ function Layout() {
   useEffect(() => {
     fetch(`data/${today}/regions/region_key_${today}.json`)
       .then(response => response.json())
-      .then(data => setRegionNames(data))
-      .catch(() => setRegionNames({}));
-  }, []); // Only run once on mount
+      .then(data => {
+        console.log("region names loaded:", data);
+        setRegionNames(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.log("error loading region names:");
+        console.error('Error loading region names:', error);
+        setRegionNames({});
+        setLoading(false);
+      });
+  }, [today]); // Run when today changes
 
   // Determine selected region from the current path
   const match = location.pathname.match(/^\/region\/(\d+)/);
