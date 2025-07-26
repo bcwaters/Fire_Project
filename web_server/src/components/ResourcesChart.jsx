@@ -101,9 +101,9 @@ const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'R
     .attr('transform', `translate(${internalMargin.left + 10}, ${internalMargin.top + 20})`);
 
   // Calculate legend dimensions based on content (3 items)
-  const legendItemHeight = isMobile ? 15 : 20;
-  const legendItemSpacing = isMobile ? 5 : 8;
-  const legendBoxWidth = isMobile ? 60 : 92; // 80% of 75 and 115
+  const legendItemHeight =  20;
+  const legendItemSpacing = 8;
+  const legendBoxWidth =  92; // 80% of 75 and 115
   const legendBoxHeight = 3 * legendItemHeight + 2 * legendItemSpacing;
   
   // Add legend background box with border

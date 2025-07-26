@@ -51,9 +51,9 @@ function Layout() {
               onClick={() => navigate('/')}
             />
             {isHomePage ? (
-              <h1 className="dashboard-title" onClick={() => navigate('/')}>Fire Incident Graphs</h1>
+              <h1 className="dashboard-title">Fire Incident Graphs</h1>
             ) : (
-              <h1 className="dashboard-title-navigated" onClick={() => navigate('/')}>Fire Incident Graphs</h1>
+              <h1 className="dashboard-title-navigated">Fire Incident Graphs</h1>
             )}
           </div>
           {/* Desktop dropdown */}

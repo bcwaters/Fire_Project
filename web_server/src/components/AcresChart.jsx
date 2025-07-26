@@ -88,10 +88,10 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     .attr('transform', `translate(${internalMargin.left + 10}, ${internalMargin.top + 20})`);
 
   // Calculate legend dimensions based on content
-  const legendItemHeight = isMobile ? 15 : 20;
-  const legendItemSpacing = isMobile ? 5 : 8;
-  const legendTextWidth = isMobile ? 60 : 100;
-  const legendBoxWidth = isMobile ? 60 : 92; // 80% of 75 and 115
+  const legendItemHeight =  20;
+  const legendItemSpacing =  8;
+  const legendTextWidth =  100;
+  const legendBoxWidth =  92; // 80% of 75 and 115
   const legendBoxHeight = (showContainment && data[0].containedPercent !== undefined) ? 
     (2 * legendItemHeight + legendItemSpacing) : (legendItemHeight + 10); // Add padding for single item
   

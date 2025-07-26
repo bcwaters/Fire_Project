@@ -389,16 +389,14 @@ html, body {
 }
 
 .dashboard-title h1{
-  cursor: pointer;
+
   font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
   font-size: .7em;
   font-weight: 600;
   transition: color 0.2s;
 }
 
-.dashboard-title:hover {
-  color: #b28704;
-}
+
 
 .zoomable-image {
   display: block;

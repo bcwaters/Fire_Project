@@ -112,17 +112,48 @@
     min-height: 1200px; /* Ensure enough height for stacked layout */
   }
 
+  /* Keep legends same size as desktop */
+  .national-summary-graph text {
+    font-size: inherit !important;
+  }
+
+  .national-summary-graph .header-cell {
+    font-size: inherit !important;
+  }
+
+  .national-summary-graph .details-table text {
+    font-size: 9px !important;
+  }
+
   .save-controls {
     flex-direction: column;
     align-items: stretch;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 0 5px;
   }
 
   .save-btn {
-    width: 100%;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
     justify-content: center;
   }
 
   .national-summary-graph-container {
     max-width: 100%;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .save-controls {
+    gap: 6px;
+    margin-bottom: 8px;
+    padding: 0 3px;
+  }
+
+  .save-btn {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.6rem;
   }
 } 
