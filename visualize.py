@@ -148,16 +148,18 @@ def visualize_region_data(idx, region, data, target_dir, header_data):
         if ppl_str == 'UNK':
             personnel.append(0)
         else:
-            # Extract first number from "X/Y" format
+            # Extract first number from "X/Y" format and remove commas
             try:
-                ppl_num = int(ppl_str.split('/')[0])
+                cleaned_ppl = ppl_str.split('/')[0].replace(',', '')
+                ppl_num = int(cleaned_ppl)
                 personnel.append(ppl_num)
             except (ValueError, IndexError):
                 personnel.append(0)
         
-        # Convert Change in PPL to numeric
+        # Convert Change in PPL to numeric (remove commas)
+        change_ppl_str = incident['Chge in PPL']
         try:
-            change_personnel.append(int(incident['Chge in PPL']))
+            change_personnel.append(int(change_ppl_str.replace(',', '')))
         except ValueError:
             change_personnel.append(0)
         
