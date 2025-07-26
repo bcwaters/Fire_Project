@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './App.css';
+import RegionalDataGraph from './RegionalDataGraph.jsx';
 
 function getTodayMDTPretty() {
   const mdtDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Denver' }));
@@ -24,7 +25,6 @@ function RegionDetail() {
   const [regionSummary, setRegionSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [summaryError, setSummaryError] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -87,36 +87,22 @@ function RegionDetail() {
     <div className="region-detail">
 
       <div className="region-detail-header">
-
         <h1 className="region-detail-title"> {regionName} <span style={{fontSize: '.5rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
-
       </div>
-      <img
-        src={`/data/${today}/regions/fire_analysis_region_${regionId}.png`}
-        alt={`Fire analysis for ${regionName} ${todayPrettyMDT} MDT`}
-        className="full-image region-zoomable-image"
-        onClick={() => setModalOpen(true)}
-      />
-      {modalOpen && (
-        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
-          <div className="modal-content" style={{ padding: 0, background: 'none', boxShadow: 'none', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }} onClick={e => e.stopPropagation()}>
-            <button className="close-button" style={{ position: 'absolute', top: 20, right: 30, zIndex: 2 }} onClick={() => setModalOpen(false)}>&times;</button>
-            <img
-              src={`/data/${today}/regions/fire_analysis_region_${regionId}.png`}
-              alt={`Fire analysis for ${regionName} full size`}
-              style={{
-                maxWidth: '90vw',
-                maxHeight: '90vh',
-                borderRadius: '12px',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.25)',
-                background: 'white',
-                display: 'block',
-                margin: '0 auto'
-              }}
-            />
-          </div>
-        </div>
-      )}
+      
+      {/* D3.js Chart */}
+      <div className="chart-container">
+        {loading ? (
+          <div className="loading-chart">Loading chart...</div>
+        ) : (
+          <RegionalDataGraph 
+            regionId={regionId} 
+            data={regionData} 
+            headerData={{ header: ['', todayPrettyMDT] }} 
+          />
+        )}
+      </div>
+
       {loading && <p>Loading region data...</p>}
       {error && <p className="error-message">{error}</p>}
       <div className="predictive-summary-container">

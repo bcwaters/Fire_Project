@@ -1,0 +1,57 @@
+.regional-data-graph {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0;
+  background: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.regional-data-graph svg {
+  display: block;
+  margin: 0 auto;
+  background: #f5f5f5;
+  max-width: 100%;
+  height: auto;
+}
+
+.regional-data-graph .acres-bar:hover,
+.regional-data-graph .containment-bar:hover,
+.regional-data-graph .personnel-bar:hover,
+.regional-data-graph .change-bar:hover,
+.regional-data-graph .crews-bar:hover,
+.regional-data-graph .engines-bar:hover,
+.regional-data-graph .helicopters-bar:hover {
+  opacity: 1 !important;
+  stroke: #333;
+  stroke-width: 1px;
+  cursor: pointer;
+}
+
+.regional-data-graph text {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.regional-data-graph .header-cell {
+  font-weight: bold;
+  fill: #333;
+}
+
+.regional-data-graph .details-table text {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .regional-data-graph {
+    padding: 10px;
+    max-width: 95vw;
+  }
+  
+  .regional-data-graph svg {
+    width: 100%;
+    height: auto;
+  }
+} 
