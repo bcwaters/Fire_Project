@@ -1,6 +1,7 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import { useState, useEffect } from 'react';
+import fireGraphIcon from './assets/fire_graph_icon.png';
 
 function Layout() {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -42,11 +43,19 @@ function Layout() {
     <div className="app">
       <header className="app-header">
         <div className="header-row">
-          {isHomePage ? (
-            <h1 className="dashboard-title" onClick={() => navigate('/')}>Fire Incident Graphs</h1>
-          ) : (
-            <h1 className="dashboard-title-navigated" onClick={() => navigate('/')}>Fire Incident Graphs</h1>
-          )}
+          <div className="header-left">
+            <img 
+              src={fireGraphIcon} 
+              alt="Fire Graph Icon" 
+              className="header-icon"
+              onClick={() => navigate('/')}
+            />
+            {isHomePage ? (
+              <h1 className="dashboard-title" onClick={() => navigate('/')}>Fire Incident Graphs</h1>
+            ) : (
+              <h1 className="dashboard-title-navigated" onClick={() => navigate('/')}>Fire Incident Graphs</h1>
+            )}
+          </div>
           {/* Desktop dropdown */}
           <select onChange={handleRegionChange} value={selectedRegion} className="region-dropdown hide-on-mobile">
             <option value="" disabled>Region</option>

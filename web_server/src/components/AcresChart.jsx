@@ -85,31 +85,51 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
 
   // Add legend
   const legend = chartGroup.append('g')
-    .attr('transform', `translate(${width - (isMobile ? 80 : 130)}, ${internalMargin.top + 20})`);
+    .attr('transform', `translate(${internalMargin.left + 10}, ${internalMargin.top + 20})`);
+
+  // Calculate legend dimensions based on content
+  const legendItemHeight = isMobile ? 15 : 20;
+  const legendItemSpacing = isMobile ? 5 : 8;
+  const legendTextWidth = isMobile ? 60 : 100;
+  const legendBoxWidth = isMobile ? 60 : 92; // 80% of 75 and 115
+  const legendBoxHeight = (showContainment && data[0].containedPercent !== undefined) ? 
+    (2 * legendItemHeight + legendItemSpacing) : (legendItemHeight + 10); // Add padding for single item
+  
+  // Add legend background box with border
+  legend.append('rect')
+    .attr('width', legendBoxWidth)
+    .attr('height', legendBoxHeight)
+    .attr('fill', 'white')
+    .attr('stroke', '#ccc')
+    .attr('stroke-width', 1)
+    .attr('rx', 3); // Rounded corners
 
   legend.append('rect')
+    .attr('x', 5)
+    .attr('y', 5)
     .attr('width', isMobile ? 10 : 15)
     .attr('height', isMobile ? 10 : 15)
     .attr('fill', '#36454F') // Charcoal
     .attr('opacity', 1);
 
   legend.append('text')
-    .attr('x', isMobile ? 15 : 20)
-    .attr('y', isMobile ? 8 : 12)
+    .attr('x', isMobile ? 20 : 25)
+    .attr('y', isMobile ? 13 : 18)
     .style('font-size', legendFontSize)
     .text('Acres');
 
   if (showContainment && data[0].containedPercent !== undefined) {
     legend.append('rect')
-      .attr('y', isMobile ? 15 : 20)
+      .attr('x', 5)
+      .attr('y', isMobile ? 20 : 25)
       .attr('width', isMobile ? 10 : 15)
       .attr('height', isMobile ? 10 : 15)
       .attr('fill', '#4e8a4e') // Pastel grey-green
       .attr('opacity', 1);
 
     legend.append('text')
-      .attr('x', isMobile ? 15 : 20)
-      .attr('y', isMobile ? 23 : 32)
+      .attr('x', isMobile ? 20 : 25)
+      .attr('y', isMobile ? 28 : 38)
       .style('font-size', legendFontSize)
       .text('Containment');
   }

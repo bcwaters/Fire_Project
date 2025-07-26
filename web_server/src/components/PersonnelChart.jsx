@@ -92,43 +92,62 @@ const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'P
 
   // Add legend
   const legend = chartGroup.append('g')
-    .attr('transform', `translate(${width - (isMobile ? 80 : 130)}, ${internalMargin.top + 20})`);
+    .attr('transform', `translate(${internalMargin.left + 10}, ${internalMargin.top + 20})`);
+
+  // Calculate legend dimensions based on content (3 items)
+  const legendItemHeight = isMobile ? 15 : 20;
+  const legendItemSpacing = isMobile ? 5 : 8;
+  const legendBoxWidth = isMobile ? 60 : 92; // 80% of 75 and 115
+  const legendBoxHeight = 3 * legendItemHeight + 2 * legendItemSpacing;
+  
+  // Add legend background box with border
+  legend.append('rect')
+    .attr('width', legendBoxWidth)
+    .attr('height', legendBoxHeight)
+    .attr('fill', 'white')
+    .attr('stroke', '#ccc')
+    .attr('stroke-width', 1)
+    .attr('rx', 3); // Rounded corners
 
   legend.append('rect')
+    .attr('x', 5)
+    .attr('y', 5)
     .attr('width', isMobile ? 10 : 15)
     .attr('height', isMobile ? 10 : 15)
     .attr('fill', '#36454F') // Charcoal
     .attr('opacity', 1);
 
   legend.append('text')
-    .attr('x', isMobile ? 15 : 20)
-    .attr('y', isMobile ? 8 : 12)
+    .attr('x', isMobile ? 20 : 25)
+    .attr('y', isMobile ? 13 : 18)
     .style('font-size', legendFontSize)
     .text('Total');
 
   legend.append('rect')
-    .attr('y', isMobile ? 15 : 20)
+    .attr('x', 5)
+    .attr('y', isMobile ? 20 : 25)
     .attr('width', isMobile ? 10 : 15)
     .attr('height', isMobile ? 10 : 15)
     .attr('fill', '#4e8a4e') // Pastel grey-green
     .attr('opacity', 1);
 
   legend.append('text')
-    .attr('x', isMobile ? 15 : 20)
-    .attr('y', isMobile ? 23 : 32)
+    .attr('x', isMobile ? 20 : 25)
+    .attr('y', isMobile ? 28 : 38)
     .style('font-size', legendFontSize)
     .text('Change +');
 
   legend.append('rect')
-    .attr('y', isMobile ? 30 : 40)
+    .attr('x', 5)
+    .attr('y', isMobile ? 35 : 45)
     .attr('width', isMobile ? 10 : 15)
     .attr('height', isMobile ? 10 : 15)
     .attr('fill', '#8b2513') // Dark grey-red
     .attr('opacity', 1);
 
   legend.append('text')
-    .attr('x', isMobile ? 15 : 20)
-    .attr('y', isMobile ? 38 : 52)
+    .attr('x', isMobile ? 20 : 25)
+    .attr('y', isMobile ? 43 : 58)
     .style('font-size', legendFontSize)
     .text('Change -');
 

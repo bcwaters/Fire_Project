@@ -1,10 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import ChartContainer from './components/ChartContainer';
 import './RegionalDataGraph.css';
 
-const RegionalDataGraph = ({ regionId, data, headerData }) => {
+const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => {
   const chartContainerRef = useRef();
-
 
   const saveAsSVG = () => {
     const svgElement = chartContainerRef.current?.querySelector('svg');
@@ -25,13 +24,13 @@ const RegionalDataGraph = ({ regionId, data, headerData }) => {
     URL.revokeObjectURL(url);
   };
 
+  useEffect(() => {
+    setDownloadGraph(saveAsSVG);
+  }, []); // Empty dependency array since we only want to set it once
+
   return (
     <div className="regional-data-graph-container">
-      <div className="save-controls">
-        <button onClick={saveAsSVG} className="save-btn save-svg">
-        Download Graph
-        </button>
-      </div>
+      
       <div ref={chartContainerRef}>
         <ChartContainer 
           data={data}

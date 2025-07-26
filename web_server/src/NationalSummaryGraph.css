@@ -23,38 +23,33 @@
   padding: 0 10px;
 }
 
+
 .save-btn {
-  color: black;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.4rem 1rem;
+  background: #FB8C00;
+  
+  border-left: 1px solid #333;
+  border-right: 1px solid #333;
+  border-bottom: 1px solid #333;
+  color: #111;
+
+  border-radius: 0px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  transition: background 0.2s;
 }
 
 .save-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: #ffd54f;
 }
 
-.save-svg {
-  background-color: #FB8C00;
-  color: black;
-}
 
-.save-svg:hover {
-  background-color: #FB8C00;
-}
 
-.save-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
+
+
+
+
+
 
 .national-summary-graph svg {
   display: block;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './App.css';
 import RegionalDataGraph from './RegionalDataGraph.jsx';
@@ -25,6 +25,11 @@ function RegionDetail() {
   const [regionSummary, setRegionSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [summaryError, setSummaryError] = useState(null);
+  const [downloadGraph, setDownloadGraph] = useState();
+
+  const memoizedSetDownloadGraph = useCallback((func) => {
+    setDownloadGraph(() => func);
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -81,42 +86,45 @@ function RegionDetail() {
 
   return (
     <div>
-    <div style={{ width: '100vw', display: 'flex', justifyContent: 'flex-start' }}>
-    <button className="back-button" onClick={() => navigate('/')}>← Home</button>
-  </div>
-    <div className="region-detail">
+      <div className="page-header-container">
+        <button className="back-button" onClick={() => navigate('/')}>← Home</button>
+        <button onClick={downloadGraph} className="save-btn save-svg">
+          Download Graph
+        </button>
+      </div>
+      <div className="region-detail">
+        <div className="region-detail-header">
+          <h1 className="region-detail-title"> {regionName} <span style={{fontSize: '.5rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
+        </div>
+        
+        {/* D3.js Chart */}
+        <div className="chart-container">
+          {loading ? (
+            <div className="loading-chart">Loading chart...</div>
+          ) : (
+            <RegionalDataGraph 
+              regionId={regionId} 
+              data={regionData} 
+              headerData={{ header: ['', todayPrettyMDT] }}
+              setDownloadGraph={memoizedSetDownloadGraph}
+            />
+          )}
+        </div>
 
-      <div className="region-detail-header">
-        <h1 className="region-detail-title"> {regionName} <span style={{fontSize: '.5rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
+        {loading && <p>Loading region data...</p>}
+        {error && <p className="error-message">{error}</p>}
+        <div className="predictive-summary-container">
+          <h2 className="predictive-summary-label">Region Summary:</h2>
+          {summaryLoading && <p className="predictive-summary-loading">Loading region summary...</p>}
+          {summaryError && <p className="predictive-summary-error">{summaryError}</p>}
+          {!summaryLoading && !summaryError && regionSummary && (
+            <pre className="predictive-summary-text">{regionSummary.join('\n')}</pre>
+          )}
+          {!summaryLoading && !summaryError && !regionSummary && (
+            <p className="predictive-summary-error">No summary available for this region.</p>
+          )}
+        </div>
       </div>
-      
-      {/* D3.js Chart */}
-      <div className="chart-container">
-        {loading ? (
-          <div className="loading-chart">Loading chart...</div>
-        ) : (
-          <RegionalDataGraph 
-            regionId={regionId} 
-            data={regionData} 
-            headerData={{ header: ['', todayPrettyMDT] }} 
-          />
-        )}
-      </div>
-
-      {loading && <p>Loading region data...</p>}
-      {error && <p className="error-message">{error}</p>}
-      <div className="predictive-summary-container">
-        <h2 className="predictive-summary-label">Region Summary:</h2>
-        {summaryLoading && <p className="predictive-summary-loading">Loading region summary...</p>}
-        {summaryError && <p className="predictive-summary-error">{summaryError}</p>}
-        {!summaryLoading && !summaryError && regionSummary && (
-          <pre className="predictive-summary-text">{regionSummary.join('\n')}</pre>
-        )}
-        {!summaryLoading && !summaryError && !regionSummary && (
-          <p className="predictive-summary-error">No summary available for this region.</p>
-        )}
-      </div>
-    </div>
     </div>
   );
 }
