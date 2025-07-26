@@ -51,48 +51,6 @@
   height: auto;
 }
 
-/* Ensure axes are always black */
-.regional-data-graph .domain,
-.regional-data-graph .tick line,
-.regional-data-graph .tick text {
-  stroke: #333 !important;
-  fill: #333 !important;
-  color: #333 !important;
-  font-weight: 200 !important;
-  stroke-width: 0.5px !important;
-}
-
-/* Additional axis styling for better visibility */
-.regional-data-graph .x-axis .domain,
-.regional-data-graph .y-axis .domain {
-  stroke: #333 !important;
-  stroke-width: 0.5px !important;
-}
-
-.regional-data-graph .x-axis .tick line,
-.regional-data-graph .y-axis .tick line {
-  stroke: #333 !important;
-  stroke-width: 0.5px !important;
-}
-
-/* Make y-axis even thinner */
-.regional-data-graph .y-axis .domain {
-  stroke-width: 0.25px !important;
-}
-
-.regional-data-graph .y-axis .tick line {
-  stroke-width: 0.25px !important;
-}
-
-.regional-data-graph .x-axis .tick text,
-.regional-data-graph .y-axis .tick text {
-  fill: #333 !important;
-  color: #333 !important;
-  font-weight: 200 !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  stroke-width: 0.5px !important;
-}
-
 .regional-data-graph .acres-bar:hover,
 .regional-data-graph .containment-bar:hover,
 .regional-data-graph .personnel-bar:hover,
@@ -103,7 +61,6 @@
   opacity: 1 !important;
   stroke: #333;
   stroke-width: 0.5px;
-
 }
 
 .regional-data-graph .acres-bar,
@@ -116,7 +73,6 @@
   opacity: 1 !important;
   stroke: #333;
   stroke-width: 0.5px;
-
 }
 
 .regional-data-graph text {

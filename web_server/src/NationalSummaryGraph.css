@@ -60,48 +60,6 @@
   height: auto;
 }
 
-/* Ensure axes are always black */
-.national-summary-graph .domain,
-.national-summary-graph .tick line,
-.national-summary-graph .tick text {
-  stroke: #333 !important;
-  fill: #333 !important;
-  color: #333 !important;
-  font-weight: 200 !important;
-  stroke-width: 0.5px !important;
-}
-
-/* Additional axis styling for better visibility */
-.national-summary-graph .x-axis .domain,
-.national-summary-graph .y-axis .domain {
-  stroke: #333 !important;
-  stroke-width: 0.5px !important;
-}
-
-.national-summary-graph .x-axis .tick line,
-.national-summary-graph .y-axis .tick line {
-  stroke: #333 !important;
-  stroke-width: 0.5px !important;
-}
-
-/* Make y-axis even thinner */
-.national-summary-graph .y-axis .domain {
-  stroke-width: 0.25px !important;
-}
-
-.national-summary-graph .y-axis .tick line {
-  stroke-width: 0.25px !important;
-}
-
-.national-summary-graph .x-axis .tick text,
-.national-summary-graph .y-axis .tick text {
-  fill: #333 !important;
-  color: #333 !important;
-  font-weight: 200 !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  stroke-width: 0.5px !important;
-}
-
 .national-summary-graph .acres-bar:hover,
 .national-summary-graph .incidents-bar:hover,
 .national-summary-graph .personnel-bar:hover,
@@ -112,7 +70,6 @@
   opacity: 1 !important;
   stroke: #333;
   stroke-width: 0.5px;
- 
 }
 
 .national-summary-graph .acres-bar,
@@ -125,7 +82,6 @@
   opacity: 1 !important;
   stroke: #333;
   stroke-width: 0.5px;
-
 }
 
 .national-summary-graph text {

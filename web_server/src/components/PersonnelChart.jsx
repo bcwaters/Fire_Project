@@ -58,6 +58,7 @@ const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'P
     .attr('transform', 'rotate(-45)') // Same rotation for mobile and desktop
     .style('text-anchor', 'end')
     .style('font-size', axisFontSize)
+    .style('fill', '#000') // Black color for x-axis labels
     .attr('dy', isMobile ? '1.5em' : '0.71em') // Add padding for mobile
     .text(d => {
       const dataPoint = data.find(item => item.name === d);
@@ -72,7 +73,8 @@ const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'P
     .attr('transform', `translate(${internalMargin.left},${internalMargin.top})`)
     .call(d3.axisLeft(y))
     .selectAll('text')
-    .style('font-size', axisFontSize);
+    .style('font-size', axisFontSize)
+    .style('fill', '#000'); // Black color for y-axis labels
 
   // Make y-axis lines much thinner
   chartGroup.selectAll('.y-axis .domain, .y-axis .tick line')
