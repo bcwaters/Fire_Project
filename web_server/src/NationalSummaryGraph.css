@@ -1,18 +1,66 @@
 .national-summary-graph {
   width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   padding: 0;
   background: #f5f5f5;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.national-summary-graph-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.save-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 0 10px;
+}
+
+.save-btn {
+  color: black;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.save-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.save-svg {
+  background-color: #FB8C00;
+  color: black;
+}
+
+.save-svg:hover {
+  background-color: #FB8C00;
+}
+
+.save-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .national-summary-graph svg {
   display: block;
-  margin: 0 auto;
+  margin: 0;
   background: #f5f5f5;
-  max-width: 100%;
+  width: 100%;
   height: auto;
 }
 
@@ -26,7 +74,20 @@
   opacity: 1 !important;
   stroke: #333;
   stroke-width: 1px;
-  cursor: pointer;
+ 
+}
+
+.national-summary-graph .acres-bar,
+.national-summary-graph .incidents-bar,
+.national-summary-graph .personnel-bar,
+.national-summary-graph .change-bar,
+.national-summary-graph .crews-bar,
+.national-summary-graph .engines-bar,
+.national-summary-graph .helicopters-bar {
+  opacity: 1 !important;
+  stroke: #333;
+  stroke-width: 1px;
+
 }
 
 .national-summary-graph text {
@@ -46,12 +107,27 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .national-summary-graph {
-    padding: 10px;
-    max-width: 95vw;
+    padding: 0;
+    max-width: 100%;
   }
   
   .national-summary-graph svg {
     width: 100%;
     height: auto;
+    min-height: 1200px; /* Ensure enough height for stacked layout */
+  }
+
+  .save-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .save-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .national-summary-graph-container {
+    max-width: 100%;
   }
 } 

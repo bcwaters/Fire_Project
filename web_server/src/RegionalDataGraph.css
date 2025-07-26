@@ -1,18 +1,67 @@
 .regional-data-graph {
   width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   padding: 0;
   background: #f5f5f5;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.regional-data-graph-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.save-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 0 10px;
+}
+
+.save-btn {
+  background-color: #FB8C00;;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: black;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.save-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.save-svg {
+  background-color: #FB8C00;
+  color: black;
+}
+
+.save-svg:hover {
+  background-color: #FB8C00;
+}
+
+.save-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .regional-data-graph svg {
   display: block;
-  margin: 0 auto;
+  margin: 0;
   background: #f5f5f5;
-  max-width: 100%;
+  width: 100%;
   height: auto;
 }
 
@@ -26,7 +75,20 @@
   opacity: 1 !important;
   stroke: #333;
   stroke-width: 1px;
-  cursor: pointer;
+
+}
+
+.regional-data-graph .acres-bar,
+.regional-data-graph .containment-bar,
+.regional-data-graph .personnel-bar,
+.regional-data-graph .change-bar,
+.regional-data-graph .crews-bar,
+.regional-data-graph .engines-bar,
+.regional-data-graph .helicopters-bar {
+  opacity: 1 !important;
+  stroke: #333;
+  stroke-width: 1px;
+
 }
 
 .regional-data-graph text {
@@ -46,12 +108,27 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .regional-data-graph {
-    padding: 10px;
-    max-width: 95vw;
+    padding: 0;
+    max-width: 100%;
   }
   
   .regional-data-graph svg {
     width: 100%;
     height: auto;
+    min-height: 1200px; /* Ensure enough height for stacked layout */
+  }
+
+  .save-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .save-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .regional-data-graph-container {
+    max-width: 100%;
   }
 } 
