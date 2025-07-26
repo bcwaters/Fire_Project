@@ -111,6 +111,16 @@
     min-height: 1200px; /* Ensure enough height for stacked layout */
   }
 
+  /* Mobile-specific axis styles */
+  .national-summary-graph .axis .domain, 
+  .national-summary-graph .axis .tick line {
+    stroke: #000 !important; /* Force black stroke for axis lines and ticks */
+  }
+  
+  .national-summary-graph .axis .tick text {
+    fill: #000 !important; /* Force black fill for text labels */
+  }
+
   /* Smaller font sizes for legends on mobile */
   .national-summary-graph text {
     font-size: 10px !important;

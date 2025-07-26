@@ -102,6 +102,16 @@
     min-height: 1200px; /* Ensure enough height for stacked layout */
   }
 
+  /* Mobile-specific axis styles */
+  .regional-data-graph .axis .domain, 
+  .regional-data-graph .axis .tick line {
+    stroke: #000 !important; /* Force black stroke for axis lines and ticks */
+  }
+  
+  .regional-data-graph .axis .tick text {
+    fill: #000 !important; /* Force black fill for text labels */
+  }
+
   /* Smaller font sizes for legends on mobile */
   .regional-data-graph text {
     font-size: 10px !important;
@@ -121,7 +131,7 @@
   }
 
   .save-btn {
-
+    width: 100%;
     justify-content: center;
   }
 
