@@ -57,9 +57,10 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     .attr('transform', `translate(${internalMargin.left},${chartHeight + internalMargin.top})`)
     .call(d3.axisBottom(x).tickSize(0)) // Remove tick lines
     .selectAll('text')
-    .attr('transform', isMobile ? 'rotate(-90)' : 'rotate(-45)')
-    .style('text-anchor', isMobile ? 'end' : 'end')
+    .attr('transform', 'rotate(-45)') // Same rotation for mobile and desktop
+    .style('text-anchor', 'end')
     .style('font-size', axisFontSize)
+    .attr('dy', isMobile ? '1.5em' : '0.71em') // Add padding for mobile
     .text(d => {
       const dataPoint = data.find(item => item.name === d);
       if (dataPoint) {
