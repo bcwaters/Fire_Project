@@ -105,7 +105,7 @@ const ChartContainer = ({
     } else {
       // Desktop layout: 2x2 grid, full width
       width = effectiveWidth;
-      height = 850;
+      height = 1050;
       gap = 40; // Horizontal gap between columns
       verticalGap = 60; // Vertical gap between rows
       subplotWidth = (width - gap) / 2;

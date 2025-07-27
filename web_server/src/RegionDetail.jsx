@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './App.css';
 import RegionalDataGraph from './RegionalDataGraph.jsx';
+import { useRegionNames } from './RegionContext.jsx';
 
 function getTodayMDTPretty() {
   const mdtDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Denver' }));
@@ -19,27 +20,26 @@ function RegionDetail() {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const todayPrettyMDT = getTodayMDTPretty();
   const [regionData, setRegionData] = useState(null);
-  const [regionName, setRegionName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [regionSummary, setRegionSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [summaryError, setSummaryError] = useState(null);
   const [downloadGraph, setDownloadGraph] = useState();
+  const { regionNames, loading: regionNamesLoading } = useRegionNames();
 
   const memoizedSetDownloadGraph = useCallback((func) => {
     setDownloadGraph(() => func);
   }, []);
+
+  // Get region name from context
+  const regionName = regionNames[regionId] || `Region ${regionId}`;
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
       setError(null);
       try {
-        // Load region names
-        const keyResp = await fetch(`/data/${today}/regions/region_key_${today}.json`);
-        const keyJson = await keyResp.json();
-        setRegionName(keyJson[regionId] || `Region ${regionId}`);
         // Load region data
         const dataResp = await fetch(`/data/${today}/regions/Region_${regionId}_${today}.json`);
         if (!dataResp.ok) throw new Error('Region data not found');
@@ -79,10 +79,21 @@ function RegionDetail() {
         setSummaryLoading(false);
       }
     }
-    if (regionName) {
+    if (regionName && !regionNamesLoading) {
       fetchRegionSummary();
     }
-  }, [regionName, today]);
+  }, [regionName, today, regionNamesLoading]);
+
+  // Show loading state while region names are being fetched
+  if (regionNamesLoading) {
+    return (
+      <div className="app">
+        <main>
+          <p>Loading...</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div>

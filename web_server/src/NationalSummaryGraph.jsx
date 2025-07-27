@@ -17,7 +17,7 @@ const NationalSummaryGraph = ({ data, headerData, setDownloadGraph }) => {
     
     // Set a reasonable fixed width for download (1200px is a good standard width)
     const downloadWidth = 1200;
-    const downloadHeight = 700;
+    const downloadHeight = 1000;
     
     clonedSvg.setAttribute('width', downloadWidth);
     clonedSvg.setAttribute('height', downloadHeight);

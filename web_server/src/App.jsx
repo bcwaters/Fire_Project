@@ -4,6 +4,7 @@ import RegionDetail from './RegionDetail.jsx'
 import Layout from './Layout.jsx'
 import './App.css'
 import NationalSummary from './NationalSummary.jsx'
+import { RegionProvider, useRegionNames } from './RegionContext.jsx'
 
 function getTodayMDTPretty() {
   const mdtDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Denver' }));
@@ -15,8 +16,8 @@ function getTodayMDTPretty() {
   });
 }
 
-function Dashboard({ regionNames }) {
-  const todayPrettyMDT = getTodayMDTPretty();
+function Dashboard() {
+
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const [loading, setLoading] = useState(false); // regionNames now comes from props
   const [summary, setSummary] = useState('');
@@ -25,14 +26,15 @@ function Dashboard({ regionNames }) {
   const navigate = useNavigate();
   const [selectedRegion, setSelectedRegion] = useState(null);
   const params = useParams(); // <-- Add this line
+  const { regionNames, loading: regionNamesLoading } = useRegionNames();
+
+  // Dynamically generate regions array from regionNames keys
+  const regions = Object.keys(regionNames).map(key => parseInt(key)).sort((a, b) => a - b);
 
 
   const handleRegionSelect = (region) => {
     setSelectedRegion(region);
   }
-
-  //TODO dynamically load regions from region_key_${today}.json
-  const regions = [1, 2, 3, 4, 5, 6, 7];
 
   useEffect(() => {
     if (params.region) {
@@ -72,7 +74,7 @@ function Dashboard({ regionNames }) {
       });
   }, [today]);
 
-  if (loading || summaryLoading) {
+  if (loading || summaryLoading || regionNamesLoading) {
     return (
       <div className="app">
         <main>
@@ -146,44 +148,18 @@ function Dashboard({ regionNames }) {
 }
 
 function App() {
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  const [regionNames, setRegionNames] = useState({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`data/${today}/regions/region_key_${today}.json`)
-      .then(response => response.json())
-      .then(data => {
-        console.log("region names loaded:", data);
-        setRegionNames(data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error loading region names:', error);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="app">
-        <main>
-          <p>Loading...</p>
-        </main>
-      </div>
-    );
-  }
-
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout regionNames={regionNames} />}>
-          <Route index element={<Dashboard regionNames={regionNames} />} />
-          <Route path="region/:regionId" element={<RegionDetail />} />
-          <Route path="national" element={<NationalSummary />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <RegionProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="region/:regionId" element={<RegionDetail />} />
+            <Route path="national" element={<NationalSummary />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </RegionProvider>
   );
 }
 

@@ -10,7 +10,7 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
   const legendFontSize = isMobile ? '8px' : '10px';
 
   // Internal margins for chart readability
-  const internalMargin = { top: 30, right: 20, bottom: 40, left: 60 };
+  const internalMargin = { top: 30, right: 20, bottom: 30, left: 60 };
   const chartWidth = width - internalMargin.left - internalMargin.right;
   const chartHeight = height - internalMargin.top - internalMargin.bottom;
 
@@ -25,7 +25,7 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
   const x = d3.scaleBand()
     .domain(data.map(d => d.name))
     .range([0, chartWidth])
-    .padding(0.1);
+    .padding(0.05);
 
   const y = d3.scaleLinear()
     .domain([0, d3.max(data, d => d.totalAcres)])

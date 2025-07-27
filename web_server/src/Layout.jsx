@@ -2,21 +2,14 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import { useState, useEffect } from 'react';
 import fireGraphIcon from './assets/fire_graph_icon.png';
+import { useRegionNames } from './RegionContext.jsx';
 
 function Layout() {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  const regions = [1, 2, 3, 4, 5, 6, 7];
+  const { regionNames, loading: regionNamesLoading } = useRegionNames();
   
-  // Hardcoded region names from regionskey.json
-  const regionNames = {
-    "1": "Northwest Area",
-    "2": "Great Basin Area",
-    "3": "Rocky Mountain Area",
-    "4": "Northern California Area",
-    "5": "Southwest Area",
-    "6": "Southern California Area",
-    "7": "Alaska Area"
-  };
+  // Dynamically generate regions array from regionNames keys
+  const regions = Object.keys(regionNames).map(key => parseInt(key)).sort((a, b) => a - b);
   
   const location = useLocation();
   const navigate = useNavigate();
@@ -42,6 +35,17 @@ function Layout() {
     navigate(`/region/${region}`);
     setIsMobileMenuOpen(false);
   };
+
+  // Show loading state while region names are being fetched
+  if (regionNamesLoading) {
+    return (
+      <div className="app">
+        <main>
+          <p>Loading...</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="app">

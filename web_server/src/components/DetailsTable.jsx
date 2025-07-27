@@ -10,7 +10,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
   const dataFontSize = isMobile ? '7px' : '9px';
 
   // Internal margins for table readability
-  const internalMargin = { top: 30, right: 10, bottom: 10, left: 10 };
+  const internalMargin = { top: 30, right: 10, bottom: 5, left: 10 };
   const tableWidth = width - internalMargin.left - internalMargin.right;
   const tableHeight = height - internalMargin.top - internalMargin.bottom;
 
