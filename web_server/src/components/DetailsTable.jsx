@@ -14,6 +14,13 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
   const tableWidth = width - internalMargin.left - internalMargin.right;
   const tableHeight = height - internalMargin.top - internalMargin.bottom;
 
+  const convertNumber = (num) => {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
+  };
+
   // Create table background
   chartGroup.append('rect')
     .attr('x', internalMargin.left)
@@ -82,7 +89,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.crews);
+        .text(convertNumber(row.crews));
 
       // Engines
       chartGroup.append('text')
@@ -90,7 +97,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.engines);
+        .text(convertNumber(row.engines));
 
       // Helicopters
       chartGroup.append('text')
@@ -98,7 +105,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.helicopters);
+        .text(convertNumber(row.helicopters));
 
       // Containment
       chartGroup.append('text')
@@ -114,7 +121,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.personnel);
+        .text(convertNumber(row.personnel));
 
       // Cost
       chartGroup.append('text')
@@ -122,7 +129,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.costToDate);
+        .text(convertNumber(row.costToDate));
     } else {
       // National summary data layout
       // GACC
@@ -139,15 +146,15 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.incidents);
+        .text(convertNumber(row.incidents));
 
       // Acres
       chartGroup.append('text')
-        .attr('x', internalMargin.left + 2 * colWidth + 5)
+        .attr('x', internalMargin.left + 2 * colWidth + (isMobile ? 10 : 5))
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.totalAcres.toLocaleString());
+        .text(convertNumber(row.totalAcres));
 
       // Crews
       chartGroup.append('text')
@@ -155,7 +162,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.crews);
+        .text(convertNumber(row.crews));
 
       // Engines
       chartGroup.append('text')
@@ -163,7 +170,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.engines);
+        .text(convertNumber(row.engines));
 
       // Helicopters
       chartGroup.append('text')
@@ -171,7 +178,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.helicopters);
+        .text(convertNumber(row.helicopters));
 
       // Personnel
       chartGroup.append('text')
@@ -179,7 +186,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.personnel);
+        .text(convertNumber(row.personnel));
 
       // Change
       chartGroup.append('text')
@@ -187,7 +194,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
-        .text(row.changePersonnel);
+        .text(convertNumber(row.changePersonnel));
     }
   });
 

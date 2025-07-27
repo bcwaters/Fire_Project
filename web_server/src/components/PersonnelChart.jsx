@@ -14,6 +14,13 @@ const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'P
   const chartWidth = width - internalMargin.left - internalMargin.right;
   const chartHeight = height - internalMargin.top - internalMargin.bottom;
 
+  const convertNumber = (num) => {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
+  };
+
   // Scales
   const x = d3.scaleBand()
     .domain(data.map(d => d.name))
@@ -63,7 +70,7 @@ const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'P
     .text(d => {
       const dataPoint = data.find(item => item.name === d);
       if (dataPoint) {
-        return isMobile ? `${d}` : `${d} ${dataPoint.personnel} ${dataPoint.changePersonnel}`;
+        return isMobile ? `${d}` : `${d} ${convertNumber(dataPoint.personnel)} ${convertNumber(dataPoint.changePersonnel)}`;
       }
       return d;
     });
@@ -71,7 +78,7 @@ const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'P
   chartGroup.append('g')
     .attr('class', 'y-axis')
     .attr('transform', `translate(${internalMargin.left},${internalMargin.top})`)
-    .call(d3.axisLeft(y))
+    .call(d3.axisLeft(y).tickFormat(convertNumber))
     .selectAll('text')
     .style('font-size', axisFontSize)
     .style('fill', '#000'); // Black color for y-axis labels
