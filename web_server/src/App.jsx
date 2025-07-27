@@ -27,14 +27,30 @@ function Dashboard() {
   const [selectedRegion, setSelectedRegion] = useState(null);
   const params = useParams(); // <-- Add this line
   const { regionNames, loading: regionNamesLoading } = useRegionNames();
+  const [isMobile, setIsMobile] = useState(false);
+  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
 
   // Dynamically generate regions array from regionNames keys
   const regions = Object.keys(regionNames).map(key => parseInt(key)).sort((a, b) => a - b);
 
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleRegionSelect = (region) => {
     setSelectedRegion(region);
   }
+
+  const toggleSummary = () => {
+    setIsSummaryExpanded(!isSummaryExpanded);
+  };
 
   useEffect(() => {
     if (params.region) {
@@ -89,11 +105,28 @@ function Dashboard() {
       {/* Welcome Section */}
       <div className="welcome-section">
         <h2 className="predictive-summary-label">Incident Graphs are updated daily at 7:30am MDT.</h2>
-        <pre className="predictive-summary-text">{header.join('\n')}
-
-
-
-</pre>
+        <pre className="predictive-summary-text mobile-header-content">{header.join('\n')}</pre>
+        
+        {/* Mobile expandable summary */}
+        {isMobile ? (
+          <div className="mobile-summary-container">
+            {!isSummaryExpanded && (
+              <button 
+                className={`mobile-summary-toggle ${isSummaryExpanded ? 'expanded' : ''}`}
+                onClick={toggleSummary}
+              >
+                {isSummaryExpanded ? 'Show Less' : 'Show More'}
+              </button>
+            )}
+            {isSummaryExpanded && (
+              <div className="mobile-summary-text expanded">
+                <pre className="predictive-summary-text mobile-summary-content">{summary}</pre>
+              </div>
+            )}
+          </div>
+        ) : (
+          <pre className="predictive-summary-text">{summary}</pre>
+        )}
       </div>
       {/* Daily Summary Block */}
 
