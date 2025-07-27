@@ -1,6 +1,6 @@
 # Core data processing and visualization
-matplotlib>=3.5.0
-numpy>=1.21.0
+#matplotlib>=3.5.0
+#numpy>=1.21.0
 
 # HTTP requests for downloading PDFs
 requests>=2.25.0
