@@ -15,9 +15,9 @@ const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => 
     // Clone the SVG to avoid modifying the displayed version
     const clonedSvg = svgElement.cloneNode(true);
     
-    // Set a reasonable fixed width for download (1200px is a good standard width)
-    const downloadWidth = 1200;
-    const downloadHeight = 700;
+    // Set a reasonable fixed width for download (800px width, 1300px height for better proportions)
+    const downloadWidth = 800;
+    const downloadHeight = 1300;
     
     clonedSvg.setAttribute('width', downloadWidth);
     clonedSvg.setAttribute('height', downloadHeight);
