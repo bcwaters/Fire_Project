@@ -2,9 +2,9 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
+  margin: auto;
   color-scheme: light dark;
-  color: #555;
+  color: #000;
   background-color: #242424;
 
   font-synthesis: none;

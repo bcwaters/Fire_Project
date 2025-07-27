@@ -1,6 +1,6 @@
 #root {
   max-width: 1400px;
- 
+  margin: auto;
   width: 100vw;
   overflow-x: hidden;
 }
