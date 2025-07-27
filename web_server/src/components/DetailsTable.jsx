@@ -150,7 +150,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
 
       // Acres
       chartGroup.append('text')
-        .attr('x', internalMargin.left + 2 * colWidth + (isMobile ? 10 : 5))
+        .attr('x', internalMargin.left + 2 * colWidth)
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
@@ -158,7 +158,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
 
       // Crews
       chartGroup.append('text')
-        .attr('x', internalMargin.left + 3 * colWidth + 5)
+        .attr('x', internalMargin.left + 3 * colWidth + 10)
         .attr('y', yPos)
         .style('font-size', dataFontSize)
         .style('font-family', 'monospace')
