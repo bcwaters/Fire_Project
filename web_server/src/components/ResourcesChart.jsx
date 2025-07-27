@@ -82,13 +82,7 @@ const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'R
     .style('font-size', axisFontSize)
     .style('fill', '#000') // Black color for x-axis labels
     .attr('dy', isMobile ? '1.5em' : '0.71em') // Add padding for mobile
-    .text(d => {
-      const dataPoint = data.find(item => item.name === d);
-      if (dataPoint) {
-        return isMobile ? `${d}` : `${d} ${convertNumber(dataPoint.crews)} ${convertNumber(dataPoint.engines)} ${convertNumber(dataPoint.helicopters)}`;
-      }
-      return d;
-    });
+    .text(d => d); // Show only the incident/GACC name, no numeric values
 
   chartGroup.append('g')
     .attr('class', 'y-axis')

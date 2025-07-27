@@ -109,7 +109,7 @@ const ChartContainer = ({
       gap = 40; // Horizontal gap between columns
       verticalGap = 60; // Vertical gap between rows
       subplotWidth = (width - gap) / 2;
-      subplotHeight = (height - verticalGap) / 2;
+      subplotHeight = ((height - verticalGap) / 2) - 35;
     }
 
     // Create SVG container - no margins
