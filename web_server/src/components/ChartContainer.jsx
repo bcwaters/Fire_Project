@@ -14,6 +14,7 @@ const ChartContainer = ({
   const svgRef = useRef();
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [resizeKey, setResizeKey] = useState(0); // Add key to force re-render on resize
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -25,6 +26,30 @@ const ChartContainer = ({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Handle container resize for chart redrawing
+  useEffect(() => {
+    let resizeTimeout;
+    
+    const handleResize = () => {
+      // Clear previous timeout to debounce resize events
+      clearTimeout(resizeTimeout);
+      
+      // Trigger chart redraw when window resizes
+      if (data && data.length > 0) {
+        // Use a key to force re-render instead of loading state
+        resizeTimeout = setTimeout(() => {
+          setResizeKey(prev => prev + 1);
+        }, 100);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+    };
+  }, [data]);
 
   useEffect(() => {
     if (!data || data.length === 0) {
@@ -63,9 +88,15 @@ const ChartContainer = ({
     // Responsive dimensions - no margins
     let width, height, gap, verticalGap, subplotWidth, subplotHeight;
     
+    // Get the actual container width instead of window width
+    const containerElement = svgRef.current?.parentElement;
+    const containerWidth = containerElement ? containerElement.clientWidth : window.innerWidth;
+    const maxWidth = 1300; // Maximum width to prevent charts from becoming too wide
+    const effectiveWidth = Math.min(containerWidth, maxWidth);
+    
     if (isMobile) {
       // Mobile layout: single column, full width
-      width = window.innerWidth;
+      width = effectiveWidth;
       height = 1200; // Taller for stacked layout
       gap = 20;
       verticalGap = 40;
@@ -73,10 +104,10 @@ const ChartContainer = ({
       subplotHeight = 250; // Fixed height for each chart
     } else {
       // Desktop layout: 2x2 grid, full width
-      width = window.innerWidth;
-      height = 700;
-      gap = 30;
-      verticalGap = 90;
+      width = effectiveWidth;
+      height = 850;
+      gap = 40; // Horizontal gap between columns
+      verticalGap = 60; // Vertical gap between rows
       subplotWidth = (width - gap) / 2;
       subplotHeight = (height - verticalGap) / 2;
     }
@@ -92,10 +123,10 @@ const ChartContainer = ({
     svg.attr('id', chartContainerId);
 
     // Chart positioning based on layout
-    let chart1X = 0, chart1Y = 0;
-    let chart2X = isMobile ? 0 : subplotWidth + gap, chart2Y = isMobile ? subplotHeight + verticalGap : 0;
-    let chart3X = 0, chart3Y = isMobile ? 2 * (subplotHeight + verticalGap) : subplotHeight + verticalGap;
-    let chart4X = isMobile ? 0 : subplotWidth + gap, chart4Y = isMobile ? 3 * (subplotHeight + verticalGap) : subplotHeight + verticalGap;
+    let chart1X = 0, chart1Y = isMobile ? 0 : 40; // Add top margin for desktop
+    let chart2X = isMobile ? 0 : subplotWidth + gap, chart2Y = isMobile ? subplotHeight + verticalGap : 40;
+    let chart3X = 0, chart3Y = isMobile ? 2 * (subplotHeight + verticalGap) : subplotHeight + verticalGap + 40;
+    let chart4X = isMobile ? 0 : subplotWidth + gap, chart4Y = isMobile ? 3 * (subplotHeight + verticalGap) : subplotHeight + verticalGap + 40;
 
     // Chart 1: Total Acres and Containment
     if (isRegional) {
@@ -171,7 +202,7 @@ const ChartContainer = ({
       .text('');
 
     setLoading(false);
-  }, [data, regionId, headerData, isRegional, isMobile]);
+  }, [data, regionId, headerData, isRegional, isMobile, resizeKey]);
 
   if (loading) {
     return <div>Loading chart...</div>;

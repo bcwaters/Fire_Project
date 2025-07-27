@@ -684,7 +684,7 @@ html, body {
 /* Chart container styles */
 .chart-container {
   width: 100%;
-  max-width: 1000px; /* Increased from 900px */
+
   margin: 0 auto;
   padding: 0; /* Removed 20px padding */
   background: #f5f5f5;

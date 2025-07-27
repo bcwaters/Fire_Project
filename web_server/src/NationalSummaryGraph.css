@@ -16,6 +16,12 @@
   background: #f5f5f5;
 }
 
+/* Override any conflicting chart-container styles */
+.national-summary-graph-container .national-summary-graph {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
 .save-controls {
   display: flex;
   justify-content: flex-end;
@@ -58,6 +64,12 @@
   background: #f5f5f5 !important;
   width: 100%;
   height: auto;
+}
+
+/* Ensure SVG takes full width for desktop layout */
+.national-summary-graph-container svg {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .national-summary-graph .acres-bar:hover,
