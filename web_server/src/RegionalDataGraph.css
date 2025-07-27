@@ -23,24 +23,29 @@
   margin-bottom: 15px;
   padding: 0 10px;
 }
-.save-btn {
-  font-size: 1rem;
-  padding: 0.4rem 1rem;
-  background: #FB8C00;
-  
-  border-left: 1px solid #333;
-  border-right: 1px solid #333;
-  border-bottom: 1px solid #333;
-  color: #111;
 
-  border-radius: 0px;
+.save-btn {
+  font-size: .9em;
+  padding: 0.4rem 1rem;
+  font-weight: 600;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  background: #FB8C00;
+  border-radius: 3px;
+  border: none;
+  color: #4A4A4A;
+  margin-top: 3px;
+  margin-bottom: 8px;
+  margin-left: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
 .save-btn:hover {
   background: #ffd54f;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+
 
 
 .regional-data-graph svg {
@@ -73,6 +78,10 @@
   opacity: 1 !important;
   stroke: #333;
   stroke-width: 0.5px;
+}
+
+.region-detail{
+  margin-top: 10px;
 }
 
 .regional-data-graph text {
@@ -128,11 +137,6 @@
   .save-controls {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .save-btn {
-    width: 100%;
-    justify-content: center;
   }
 
   .regional-data-graph-container {

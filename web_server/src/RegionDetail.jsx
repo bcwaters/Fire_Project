@@ -87,7 +87,7 @@ function RegionDetail() {
   return (
     <div>
       <div className="page-header-container">
-        <button className="back-button" onClick={() => navigate('/')}>← Home</button>
+        <button className="back-button" onClick={() => navigate('/')}>←</button>
         <button onClick={downloadGraph} className="save-btn save-svg">
           Download Graph
         </button>

@@ -54,11 +54,7 @@ function Layout() {
               className="header-icon"
               onClick={() => navigate('/')}
             />
-            {isHomePage ? (
-              <h1 className="dashboard-title">Fire Incident Graphs</h1>
-            ) : (
-              <h1 className="dashboard-title-navigated">Fire Incident Graphs</h1>
-            )}
+            
           </div>
           {/* Desktop dropdown */}
           <select onChange={handleRegionChange} value={selectedRegion} className="region-dropdown hide-on-mobile">

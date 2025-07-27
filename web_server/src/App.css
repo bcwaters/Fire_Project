@@ -22,7 +22,7 @@
 
   border-radius: 0px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  height: 100px;
+  height: 70px;
 }
 
 .app-header h1, .app-header p {
@@ -47,7 +47,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
-  padding: 0 1rem;
+
 }
 
 .graph-card {
@@ -60,18 +60,21 @@
 }
 
 .graph-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+
+  box-shadow: 10px 10px 10px 10px rgba(0, 0, 0, 0.15);
 }
+
+
 
 .graph-card h2 {
   margin: 0 0 1rem 0;
+  background-color: #D3D3D3;
   color: #333;
   font-size: 1.3rem;
   font-weight: 600;
   text-align: center;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #FBC02D;
+  border-bottom: 2px solid #575757;
   line-height: 1.3;
   min-height: 3.5rem;
   display: flex;
@@ -97,9 +100,7 @@
   transition: transform 0.2s ease;
 }
 
-.fire-graph:hover {
-  transform: scale(1.02);
-}
+
 
 .error-message {
   text-align: center;
@@ -224,23 +225,29 @@
 .back-button {
   font-size: 1rem;
   padding: 0.4rem 1rem;
+  min-width: 30px;
+  font-weight: 400;
   background: #FB8C00;
-  border-left: 1px solid #333;
-  border-right: 1px solid #333;
-  border-bottom: 1px solid #333;
-  color: #111;
-
-  border-radius: 0px;
+  border-radius: 3px;
+  border: none;
+  color: #4A4A4A;
+  margin-top: 3px;
+  margin-bottom: 8px;
+  margin-left: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
 .back-button:hover {
   background: #ffd54f;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .page-header-container {
   width: 100vw;
+  background: #f3cc4e;
+  border-top: 1px solid #d1a820;
   display: flex;
   justify-content: flex-start;
   gap:0;
@@ -279,6 +286,27 @@
   border: 1px solid #ddd;
 }
 
+/* Welcome section styles */
+.welcome-section {
+  background: #f5f5f5;
+  border-radius: 0px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: .5rem;
+
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+.welcome-section h1 {
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin: 0;
+  padding: 1rem;
+}
+
 .predictive-summary-text {
   font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
   font-size: 0.8rem;
@@ -287,6 +315,7 @@
   line-height: 1.7;
   background: none;
   margin: 0;
+  padding-bottom: 2rem;
 }
 
 .predictive-summary-loading {
@@ -323,22 +352,33 @@
 .region-dropdown {
   background: #EFEFEF;
   color: #333;
-  border: 1.5px solid #444444;
+  border: none;
   font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
   padding: 0.5em 1.2em 0.5em 0.8em;
-  font-size: .9em;
+  font-size: .8em;
+  border-radius: 5px;
   font-weight: 500;
   width: 100px;
-  box-shadow: 0 2px 8px rgba(251, 192, 45, 0.10);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   outline: none;
-  margin-left: 1.5rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  margin-left: auto;
+  margin-right: 1.5rem;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  /* Safari-specific styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 1em;
+  padding-right: 2.5em;
 }
 
 .region-dropdown:focus, .region-dropdown:hover {
-  border-color: #ffb300;
-  box-shadow: 0 4px 12px rgba(251, 192, 45, 0.18);
+  background: #CDCDCD;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .daily-summary-block{
@@ -357,7 +397,7 @@
   justify-content: space-between;
   max-width: 100vw;
   gap: 2rem;
-
+  width: 100%;
 }
 
 .header-left {
@@ -368,8 +408,8 @@
 }
 
 .header-icon {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   cursor: pointer;
 
@@ -496,9 +536,10 @@ html, body {
 @media (max-width: 768px) {
   /* Layout */
   .graphs-container {
+    width: 100%;
     grid-template-columns: 1fr;
     gap: 1.5rem;
-    padding: 0 0.5rem;
+   
   }
 
   .header-row {
@@ -515,8 +556,8 @@ html, body {
   }
 
   .header-icon {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
   }
 
   /* Header */
@@ -554,6 +595,7 @@ html, body {
 
   .graph-card h2 {
     margin: 0;
+    background: #D3D3D3;
     padding-bottom: 0;
     font-size: 1.1rem;
     min-height: 3rem;
@@ -562,8 +604,9 @@ html, body {
   /* Region dropdown */
   .region-dropdown {
     margin: .1rem .2rem .1rem .2rem;
+    margin-right: 1rem;
     width: 90px;
-    font-size: .8em;
+    font-size: .7em;
     display: block;
   }
 
@@ -649,6 +692,7 @@ html, body {
   }
 
   .graph-card h2 {
+    background-color: #D3D3D3;
     font-size: 1rem;
     min-height: 2.5rem;
   }

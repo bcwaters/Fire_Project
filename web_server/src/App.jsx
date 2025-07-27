@@ -21,6 +21,7 @@ function Dashboard({ regionNames }) {
   const [loading, setLoading] = useState(false); // regionNames now comes from props
   const [summary, setSummary] = useState('');
   const [summaryLoading, setSummaryLoading] = useState(true);
+  const [header, setHeader] = useState([]);
   const navigate = useNavigate();
   const [selectedRegion, setSelectedRegion] = useState(null);
   const params = useParams(); // <-- Add this line
@@ -45,6 +46,7 @@ function Dashboard({ regionNames }) {
     fetch(`data/${today}/daily_summary.json`)
       .then(response => response.json())
       .then(data => {
+        setHeader(data.header || []);
         let cleanSummary = data.summary.replace(/Understanding the IMSR\s*/g, '').replace(/IMSR Map\s*/g, '');
         // Remove the Comp fires block
         const compFiresRegex = /Fires not managed under a full suppression strategy[\s\S]*?can be found in the NWCG glossary  or here/;
@@ -82,13 +84,17 @@ function Dashboard({ regionNames }) {
 
   return (
     <main>
-      {/* Daily Summary Block */}
-      <div className="daily-summary-block hide-on-mobile">
-        <h2 style={{ margin: '0 0 0 5px' }}>Daily National Fire Summary <span style={{fontSize: '1rem', fontWeight: 400, color: '#b28704', marginLeft: '5px'}}>{todayPrettyMDT} MDT</span></h2>
-        <p style={{ margin: '0 0 0 5px', padding: 0}}> <span style={{ fontSize: '0.8em' }}>updated daily at 8:30am MDT</span></p>
-        {/* Comp fires block is not displayed */}
-        <pre style={{ whiteSpace: 'pre-wrap', background: '#f9f9f9', padding: '1em', borderRadius: '8px', border: '1px solid #eee' }}>{summary}</pre>
+      {/* Welcome Section */}
+      <div className="welcome-section">
+        <h2 className="predictive-summary-label">Incident Graphs are updated daily at 7:30am MDT.</h2>
+        <pre className="predictive-summary-text">{header.join('\n')}
+
+
+
+</pre>
       </div>
+      {/* Daily Summary Block */}
+
       {/* Summary Graph Row */}
       <div className="summary-row">
         <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>

@@ -274,10 +274,9 @@ def visualize_region_data(idx, region, data, target_dir, header_data):
     # Plot 4: Text Details
     ax4.axis('off')  # Turn off axes for text display
     
-    # Create text content for details
-    text_content = "Details:\n\n"
+    # Create text content for detailsroundcontent = "Details:\n\n"
     text_content += "Incident      Crw  Eng  Hel  Cont  PPL  Cost\n"
-    text_content += "-" * 50 + "\n"
+    text_content += "-" * 80 + "\n"
     for i, name in enumerate(incident_names):
         # Truncate long incident names to fit in table format
         short_name = name[:12] if len(name) > 12 else name
@@ -292,8 +291,8 @@ def visualize_region_data(idx, region, data, target_dir, header_data):
         text_content += f"{short_name:<12} {crews[i]:>4} {engines[i]:>4} {helicopters[i]:>4} {contained_pct:>4}% {total_ppl:>4} {ctd_value:>8}\n"
     
     # Display the text in the 4th subplot
-    ax4.text(0.05, 0.95, text_content, transform=ax4.transAxes, fontsize=8,  # Reduced from 10
-             verticalalignment='top', fontfamily='monospace', bbox=dict(boxstyle="round,pad=0.3", facecolor="lightgray", alpha=0.8))
+    ax4.text(0.05, 0.95, text_content, transform=ax4.transAxes, fontsize=10,  # Reduced from 10
+             verticalalignment='top', fontfamily='monospace', bbox=dict(boxstyle="square,pad=15", facecolor="lightgray", alpha=0.8))
     
     plt.tight_layout()  # Add back tight layout
     
