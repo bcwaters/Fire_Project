@@ -5,6 +5,8 @@ import Layout from './Layout.jsx'
 import './App.css'
 import NationalSummary from './NationalSummary.jsx'
 import { RegionProvider, useRegionNames } from './RegionContext.jsx'
+import NationalAcresChart from './components/NationalAcresChart.jsx'
+import RegionAcresChart from './components/RegionAcresChart.jsx'
 
 function getTodayMDTPretty() {
   const mdtDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Denver' }));
@@ -66,6 +68,8 @@ function Dashboard() {
       .then(data => {
         setHeader(data.header || []);
         let cleanSummary = data.summary.replace(/Understanding the IMSR\s*/g, '').replace(/IMSR Map\s*/g, '');
+        // Remove "Fire Activity and Teams Assigned Totals"
+        cleanSummary = cleanSummary.replace(/Fire Activity and Teams Assigned Totals\s*/g, '');
         // Remove the Comp fires block
         const compFiresRegex = /Fires not managed under a full suppression strategy[\s\S]*?can be found in the NWCG glossary  or here/;
         cleanSummary = cleanSummary.replace(compFiresRegex, '').trim();
@@ -119,8 +123,8 @@ function Dashboard() {
               </button>
             )}
             {isSummaryExpanded && (
-              <div className="mobile-summary-text expanded">
-                <pre className="predictive-summary-text mobile-summary-content">{summary}</pre>
+              <div className="predictive-summary-text expanded">
+                <pre className="predictive-summary-text mobile-header-content">{summary}</pre>
               </div>
             )}
           </div>
@@ -131,47 +135,26 @@ function Dashboard() {
       {/* Daily Summary Block */}
 
       {/* Summary Graph Row */}
-      <div className="summary-row">
-        <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
-          <h2>National Fire Summary</h2>
-          <div className="graph-wrapper">
-            <img 
-              src={`data/${today}/fire_summary_analysis.png`}
-              alt="Fire summary analysis"
-              className="fire-graph summary-graph"
-              onClick={() => navigate('/national')}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'block';
-              }}
-            />
-            <div className="error-message" style={{ display: 'none' }}>
-              <p>Summary graph not available</p>
-            </div>
-          </div>
-        </div>
-      </div>
+
       {/* Divider between summary and regions */}
       <hr className="divider" />
       {/* Region Graphs Container */}
       <div className="graphs-container">
+      <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
+          <h2>National Fire Summary</h2>
+          <div className="graph-wrapper">
+            <NationalAcresChart isMobile={isMobile} />
+          </div>
+        </div>
         {regions.map((region) => (
-          <div key={region}   onClick={() => navigate(`/region/${region}`)} className="graph-card">
+          <div key={region} onClick={() => navigate(`/region/${region}`)} className="graph-card">
             <h2>{regionNames[region] || `Region ${region}`}</h2>
             <div className="graph-wrapper">
-              <img 
-                src={`data/${today}/regions/fire_analysis_region_${region}.png`}
-                alt={`Fire analysis for ${regionNames[region] || `Region ${region}`}`}
-                className="fire-graph"
-                onClick={() => navigate(`/region/${region}`)}
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'block';
-                }}
+              <RegionAcresChart 
+                regionId={region} 
+                regionName={regionNames[region] || `Region ${region}`}
+                isMobile={isMobile}
               />
-              <div className="error-message" style={{ display: 'none' }}>
-                <p>Graph not available for {regionNames[region] || `Region ${region}`}</p>
-              </div>
             </div>
           </div>
         ))}

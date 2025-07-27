@@ -112,8 +112,8 @@ const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'P
   // Calculate legend dimensions based on content (3 items)
   const legendItemHeight =  20;
   const legendItemSpacing =  8;
-  const legendBoxWidth =  92; // 80% of 75 and 115
-  const legendBoxHeight = 3 * legendItemHeight + 2 * legendItemSpacing;
+  const legendBoxWidth = isMobile ? 82 : 92; // Reduced by 10 pixels total for mobile
+  const legendBoxHeight = isMobile ? (3 * legendItemHeight + 2 * legendItemSpacing - 8) : (3 * legendItemHeight + 2 * legendItemSpacing); // Reduced by 8 pixels for mobile
   
   // Add legend background box with border
   legend.append('rect')

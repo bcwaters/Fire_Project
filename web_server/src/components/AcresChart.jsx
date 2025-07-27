@@ -69,13 +69,7 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     .style('font-size', axisFontSize)
     .style('fill', '#000') // Black color for x-axis labels
     .attr('dy', isMobile ? '1.5em' : '0.71em') // Add padding for mobile
-    .text(d => {
-      const dataPoint = data.find(item => item.name === d);
-      if (dataPoint) {
-        return isMobile ? `${d}` : `${d} ${convertNumber(dataPoint.totalAcres)}`;
-      }
-      return d;
-    });
+    .text(d => d); // Show only the incident name, no numeric values
 
   chartGroup.append('g')
     .attr('class', 'y-axis')
@@ -106,9 +100,10 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
   const legendItemHeight =  20;
   const legendItemSpacing =  8;
   const legendTextWidth =  100;
-  const legendBoxWidth =  92; // 80% of 75 and 115
+  const legendBoxWidth = isMobile ? 87 : 92; // Reduced by 10 pixels total for mobile
   const legendBoxHeight = (showContainment && data[0].containedPercent !== undefined) ? 
-    (2 * legendItemHeight + legendItemSpacing) : (legendItemHeight + 10); // Add padding for single item
+    (isMobile ? (2 * legendItemHeight + legendItemSpacing - 8) : (2 * legendItemHeight + legendItemSpacing)) : 
+    (isMobile ? (legendItemHeight + 2) : (legendItemHeight + 10)); // Reduced by 8 pixels for mobile
   
   // Add legend background box with border
   legend.append('rect')
