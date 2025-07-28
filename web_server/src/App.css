@@ -47,6 +47,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
+  padding: 1rem;
 
 }
 
@@ -67,7 +68,6 @@
 /* Card overlay for tap for details */
 .graph-card::before {
   content: "Click for details";
-
   font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
   position: absolute;
   top: 0;
@@ -82,10 +82,11 @@
   font-size: 1.2rem;
   font-weight: 500;
   letter-spacing: 0.05em;
-  z-index: 10;
+  z-index: 20;
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
+  border-radius: 0px;
 }
 
 .graph-card:hover::before {
@@ -118,6 +119,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .fire-graph {
@@ -562,6 +564,8 @@ html, body {
   /* Layout */
   .graphs-container {
     width: 100%;
+    padding-left: 0;
+    padding-right: 0;
     grid-template-columns: 1fr;
     gap: 1.5rem;
    
@@ -614,7 +618,8 @@ html, body {
 
   /* Cards */
   .graph-card {
-   
+    margin-left: 1rem;
+    margin-right: 1rem;
     border-radius: 0px;
   }
 
@@ -765,12 +770,12 @@ html, body {
 /* Chart container styles */
 .chart-container {
   width: 100%;
-
   margin: 0 auto;
   padding: 0; /* Removed 20px padding */
   background: #f5f5f5;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .loading-chart {
@@ -867,7 +872,7 @@ html, body {
   
   .region-acres-chart svg,
   .national-acres-chart svg {
-    max-width: 95%;
+    max-width: 100%;
   }
 }
 

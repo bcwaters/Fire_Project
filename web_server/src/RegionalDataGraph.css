@@ -27,12 +27,12 @@
 .save-btn {
   font-size: .9em;
   padding: 0.4rem 1rem;
-  font-weight: 600;
+  font-weight: 500;
   font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
   background: #FB8C00;
   border-radius: 3px;
   border: none;
-  color: #4A4A4A;
+  color: #3f3f3f;
   margin-top: 3px;
   margin-bottom: 8px;
   margin-left: 1rem;

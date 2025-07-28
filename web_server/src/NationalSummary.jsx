@@ -14,14 +14,15 @@ function getTodayMDTPretty() {
 }
 
 function NationalSummary() {
+  
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const todayPrettyMDT = getTodayMDTPretty();
   const navigate = useNavigate();
   const [summary, setSummary] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [fireData, setFireData] = useState(null);
   const [fireDataLoading, setFireDataLoading] = useState(true);
+  const [fireData, setFireData] = useState([]);
   const [downloadGraph, setDownloadGraph] = useState();
 
   const memoizedSetDownloadGraph = useCallback((func) => {
@@ -81,7 +82,9 @@ function NationalSummary() {
           {fireDataLoading ? (
             <div className="loading-chart">Loading chart...</div>
           ) : (
-            <NationalSummaryGraph setDownloadGraph={memoizedSetDownloadGraph} data={fireData} headerData={{ header: ['', todayPrettyMDT] }} />
+            <>
+              <NationalSummaryGraph setDownloadGraph={memoizedSetDownloadGraph} data={fireData} headerData={{ header: ['', todayPrettyMDT] }} />
+            </> 
           )}
         </div>
 

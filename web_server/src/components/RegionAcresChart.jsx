@@ -36,12 +36,12 @@ const RegionAcresChart = ({ regionId, regionName, isMobile = false }) => {
 
     // Parse and clean data similar to ChartContainer
     const processedData = data.map(incident => ({
-      name: incident['Incident Name'],
-      totalAcres: parseFloat(incident['Total Acres'].replace(',', '')) || 0,
+      name: incident['Incident Name'] || 'Unknown',
+      totalAcres: parseFloat((incident['Total Acres'] || '0').replace(',', '')) || 0,
       containedPercent: parseInt(incident['%']) || 0,
       personnel: incident['Total PPL'] === 'UNK' ? 0 : 
-                 parseInt(incident['Total PPL'].split('/')[0].replace(',', '')) || 0,
-      changePersonnel: parseInt(incident['Chge in PPL'].replace(',', '')) || 0,
+                 parseInt((incident['Total PPL'] || '0').split('/')[0].replace(',', '')) || 0,
+      changePersonnel: parseInt((incident['Chge in PPL'] || '0').replace(',', '')) || 0,
       crews: parseInt(incident['Crw']) || 0,
       engines: parseInt(incident['Eng']) || 0,
       helicopters: parseInt(incident['Heli']) || 0,

@@ -31,6 +31,7 @@ function Dashboard() {
   const { regionNames, loading: regionNamesLoading } = useRegionNames();
   const [isMobile, setIsMobile] = useState(false);
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+  const [fireData, setFireData] = useState(null);
 
   // Dynamically generate regions array from regionNames keys
   const regions = Object.keys(regionNames).map(key => parseInt(key)).sort((a, b) => a - b);
@@ -94,6 +95,14 @@ function Dashboard() {
       });
   }, [today]);
 
+  useEffect(() => {
+    fetch(`data/${today}/fire_summary_${today}.json`)
+      .then(response => response.json())
+      .then(data => {
+        setFireData(data);
+      });
+  }, [today]);
+
   if (loading || summaryLoading || regionNamesLoading) {
     return (
       <div className="app">
@@ -143,7 +152,7 @@ function Dashboard() {
       <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
           <h2>National Fire Summary</h2>
           <div className="graph-wrapper">
-            <NationalAcresChart isMobile={isMobile} />
+            <NationalAcresChart data={fireData} isMobile={isMobile} />
           </div>
         </div>
         {regions.map((region) => (
@@ -171,7 +180,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="region/:regionId" element={<RegionDetail />} />
-            <Route path="national" element={<NationalSummary />} />
+            <Route path="national" element={<NationalSummary  />} />
           </Route>
         </Routes>
       </BrowserRouter>

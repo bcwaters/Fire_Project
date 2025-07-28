@@ -1,50 +1,46 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AcresChart from './AcresChart';
 
-const NationalAcresChart = ({ isMobile = false }) => {
+const NationalAcresChart = ({ data, isMobile = false }) => {
   const svgRef = useRef();
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    
-    fetch(`/data/${today}/fire_summary_${today}.json`)
-      .then(response => {
-        if (!response.ok) throw new Error('National data not found');
-        return response.json();
-      })
-      .then(data => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error loading national data:', err);
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
 
   useEffect(() => {
     if (!data || data.length === 0) {
+      setLoading(false);
       return;
     }
 
     // Clear previous content
     d3.select(svgRef.current).selectAll("*").remove();
-
+    
     // Parse and clean data similar to ChartContainer for national data
-    const processedData = data.map(incident => ({
-      name: incident['GACC'],
-      totalAcres: parseFloat(incident['Cumulative Acres'].replace(',', '')) || 0,
-      incidents: parseInt(incident['Incidents']) || 0,
-      personnel: parseInt(incident['Total Personnel'].replace(',', '')) || 0,
-      changePersonnel: parseInt(incident['Change in Personnel']) || 0,
-      crews: parseInt(incident['Crews']) || 0,
-      engines: parseInt(incident['Engines']) || 0,
-      helicopters: parseInt(incident['Helicopters']) || 0
-    }));
+    const processedData = data.map(incident => {
+      try {
+        return {
+          name: incident['GACC'] || 'Unknown',
+          totalAcres: parseFloat((incident['Cumulative Acres'] || '0').replace(/,/g, '')) || 0,
+          incidents: parseInt(incident['Incidents']) || 0,
+          personnel: parseInt((incident['Total Personnel'] || '0').replace(/,/g, '')) || 0,
+          changePersonnel: parseInt(incident['Change in Personnel']) || 0,
+          crews: parseInt(incident['Crews']) || 0,
+          engines: parseInt(incident['Engines']) || 0,
+          helicopters: parseInt(incident['Helicopters']) || 0
+        };
+      } catch (error) {
+        console.error('Error parsing incident data:', error, incident);
+        return {
+          name: incident['GACC'] || 'Unknown',
+          totalAcres: 0,
+          incidents: 0,
+          personnel: 0,
+          changePersonnel: 0,
+          crews: 0,
+          engines: 0,
+          helicopters: 0
+        };
+      }
+    }).filter(item => item.name !== 'Unknown' && item.totalAcres > 0);
 
     // Responsive dimensions
     const containerElement = svgRef.current?.parentElement;
@@ -71,14 +67,11 @@ const NationalAcresChart = ({ isMobile = false }) => {
       isMobile: isMobile
     });
 
+    setLoading(false);
   }, [data, isMobile]);
 
   if (loading) {
     return <div className="loading-chart">Loading chart...</div>;
-  }
-
-  if (error) {
-    return <div className="error-message">National summary chart not available</div>;
   }
 
   if (!data || data.length === 0) {
