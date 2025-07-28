@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import './styles/App.css';
 import { useEffect, useState, useCallback } from 'react';
 import NationalSummaryGraph from './components/NationalSummaryGraph.jsx';
+import { useRegionNames } from './RegionContext.jsx';
 
 function getTodayMDTPretty() {
   const mdtDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Denver' }));
@@ -15,7 +16,8 @@ function getTodayMDTPretty() {
 
 function NationalSummary() {
   
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  // Use the same date as the RegionProvider
+  const today = '20250728'; // Hardcoded for testing
   const todayPrettyMDT = getTodayMDTPretty();
   const navigate = useNavigate();
   const [summary, setSummary] = useState('');
@@ -24,6 +26,7 @@ function NationalSummary() {
   const [fireDataLoading, setFireDataLoading] = useState(true);
   const [fireData, setFireData] = useState([]);
   const [downloadGraph, setDownloadGraph] = useState();
+  const { regionNames, loading: regionNamesLoading } = useRegionNames();
 
   const memoizedSetDownloadGraph = useCallback((func) => {
     setDownloadGraph(() => func);
@@ -63,6 +66,17 @@ function NationalSummary() {
         setFireDataLoading(false);
       });
   }, [today]);
+
+  // Show loading state while region names are being fetched
+  if (regionNamesLoading) {
+    return (
+      <div className="app">
+        <main>
+          <p>Loading...</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div>

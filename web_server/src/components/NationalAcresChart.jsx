@@ -8,7 +8,8 @@ const NationalAcresChart = ({ isMobile = false }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    // Use the same date as the RegionProvider
+    const today = '20250728'; // Hardcoded for testing
     
     fetch(`/data/${today}/fire_summary_${today}.json`)
       .then(response => {

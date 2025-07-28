@@ -157,8 +157,8 @@ const ChartComponentContainer = ({
       // Mobile layout: full width charts with proportional height
       chartWidth = effectiveWidth;
     } else {
-      // Desktop layout: 2x2 grid - use full width for each chart
-      chartWidth = effectiveWidth; // Use full width instead of dividing by 2
+      // Desktop layout: 2x2 grid - use half width for each chart
+      chartWidth = effectiveWidth / 2; // Divide by 2 for 2x2 grid
     }
 
     // Clear and create Acres Chart SVG

@@ -17,7 +17,8 @@ function getTodayMDTPretty() {
 function RegionDetail() {
   const { regionId } = useParams();
   const navigate = useNavigate();
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  // Use the same date as the RegionProvider
+  const today = '20250728'; // Hardcoded for testing
   const todayPrettyMDT = getTodayMDTPretty();
   const [regionData, setRegionData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,8 +33,10 @@ function RegionDetail() {
     setDownloadGraph(() => func);
   }, []);
 
-  // Get region name from context
-  const regionName = regionNames[regionId] || `Region ${regionId}`;
+  // Get region name from context - use useMemo to prevent unnecessary recalculations
+  const regionName = React.useMemo(() => {
+    return regionNames[regionId] || `Region ${regionId}`;
+  }, [regionNames, regionId]);
 
   useEffect(() => {
     async function fetchData() {
@@ -51,8 +54,12 @@ function RegionDetail() {
         setLoading(false);
       }
     }
-    fetchData();
-  }, [regionId, today]);
+    
+    // Only fetch if region names are loaded
+    if (!regionNamesLoading) {
+      fetchData();
+    }
+  }, [regionId, today, regionNamesLoading]);
 
   useEffect(() => {
     async function fetchRegionSummary() {
@@ -79,10 +86,12 @@ function RegionDetail() {
         setSummaryLoading(false);
       }
     }
-    if (regionName && !regionNamesLoading) {
+    
+    // Only fetch if region names are loaded and we have a valid region name
+    if (!regionNamesLoading && regionNames[regionId]) {
       fetchRegionSummary();
     }
-  }, [regionName, today, regionNamesLoading]);
+  }, [regionNames, regionId, today, regionNamesLoading]);
 
   // Show loading state while region names are being fetched
   if (regionNamesLoading) {

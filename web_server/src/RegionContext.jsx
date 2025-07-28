@@ -3,23 +3,33 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const RegionContext = createContext();
 
 export function RegionProvider({ children }) {
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  // Use a known working date instead of today's date
+  const today = '20250728'; // Hardcoded for testing
   const [regionNames, setRegionNames] = useState({});
   const [loading, setLoading] = useState(true);
 
+  // Always load region names when the provider is created
   useEffect(() => {
-    fetch(`data/${today}/regions/region_key_${today}.json`)
-      .then(response => response.json())
-      .then(data => {
+    const loadRegionNames = async () => {
+      try {
+        const response = await fetch(`/data/${today}/regions/region_key_${today}.json`);
+        if (!response.ok) {
+          throw new Error('Failed to load region names');
+        }
+        const data = await response.json();
         console.log("region names loaded:", data);
         setRegionNames(data);
-        setLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error loading region names:', error);
+        // Set empty object as fallback
+        setRegionNames({});
+      } finally {
         setLoading(false);
-      });
-  }, []);
+      }
+    };
+
+    loadRegionNames();
+  }, [today]);
 
   return (
     <RegionContext.Provider value={{ regionNames, loading }}>

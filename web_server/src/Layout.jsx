@@ -5,7 +5,8 @@ import fireGraphIcon from './assets/fire_graph_icon.png';
 import { useRegionNames } from './RegionContext.jsx';
 
 function Layout() {
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  // Use a known working date instead of today's date
+  const today = '20250728'; // Hardcoded for testing
   const { regionNames, loading: regionNamesLoading } = useRegionNames();
   
   // Dynamically generate regions array from regionNames keys

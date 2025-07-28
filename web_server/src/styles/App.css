@@ -86,7 +86,7 @@
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
-  border-radius: 0px;
+  border-radius: 3px;
 }
 
 .graph-card:hover::before {
@@ -103,8 +103,12 @@
   font-weight: 600;
   text-align: center;
   font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
-
-  border-bottom: 2px solid #575757;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-top: 1px solid #898989DD;
+  border-left: 1px solid #898989DD;
+  border-right: 1px solid #898989DD;
+  border-bottom: 2px solid #898989DD;
 
   min-height: 2.5rem;
   display: flex;
@@ -625,7 +629,7 @@ html, body {
 
   .graph-card::before {
     font-size: 1rem;
-    opacity: 1;
+    opacity: 0;
   }
 
   .graph-card h2 {
@@ -727,8 +731,10 @@ html, body {
   }
 
   .graph-card::before {
-    font-size: 0.9rem;
+    font-size: 1rem;
     opacity: 1;
+    background: #D3D3D311;
+    content:"Details available";
   }
 
   .graph-card h2 {

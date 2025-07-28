@@ -54,7 +54,7 @@ function Dashboard() {
   }, [params.region]);
 
   useEffect(() => {
-    fetch(`data/${today}/daily_summary.json`)
+    fetch(`/data/${today}/daily_summary.json`)
       .then(response => response.json())
       .then(data => {
         setHeader(data.header || []);
