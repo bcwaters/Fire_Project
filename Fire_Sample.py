@@ -133,9 +133,14 @@ def parse_region_table(lines, region_name):
                 k += 1
             k += 1  # Move to the line after 'Own'
             continue
-        # Stop if we hit another region, a summary line, or 'Great Basin Area (PL 4)'
-        if re.match(r'^[A-Z][a-z]+ Area', line) or line.startswith('Total') or line == 'Great Basin Area (PL 4)':
+        # Stop if we hit another region or a summary line
+        if re.match(r'^[A-Z][a-z]+ Area', line) or line.startswith('Total'):
             break
+        #if the line contains one token add it to the next line
+        if len(line.split()) == 1:
+            k += 1
+            continue
+
         tokens = line.split()
         if len(tokens) < len(columns):
             k += 1
@@ -221,13 +226,15 @@ def parse_region_summary(lines, data_dir, today):
     Returns a dict: {region_header: [lines_between_header_and_incident]}
     """
     import re
-    region_header_pattern = re.compile(r"[A-Za-z ]+Area \(PL \d+\)")
+    region_header_pattern = re.compile(r".*Area.*\(PL\s*\d+\s*\)")
     region_map = {}
     i = 0
+    print('\n'.join(lines))
     while i < len(lines):
         line = lines[i]
         header_match = region_header_pattern.search(line)
         if header_match:
+            print(line)
             region_header = line.strip()
             data_lines = []
             i += 1
