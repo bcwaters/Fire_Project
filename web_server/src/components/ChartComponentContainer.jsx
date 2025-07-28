@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import AcresChart from './AcresChart';
 import PersonnelChart from './PersonnelChart';
 import ResourcesChart from './ResourcesChart';
@@ -16,6 +16,7 @@ const ChartComponentContainer = ({
   const personnelSvgRef = useRef();
   const resourcesSvgRef = useRef();
   const detailsSvgRef = useRef();
+  const containerRef = useRef();
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [resizeKey, setResizeKey] = useState(0); // Add key to force re-render on resize
@@ -32,24 +33,41 @@ const ChartComponentContainer = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Calculate chart dimensions when mobile state changes
-  useEffect(() => {
-    const containerElement = acresSvgRef.current?.parentElement;
-    const containerWidth = containerElement ? containerElement.clientWidth : window.innerWidth;
-    const maxWidth = 1300; // Maximum width to prevent charts from becoming too wide
-    const effectiveWidth = Math.min(containerWidth, maxWidth);
+  // Calculate chart dimensions when mobile state changes - use useLayoutEffect for initial sizing
+  useLayoutEffect(() => {
+    const calculateDimensions = () => {
+      // Try to get container width from the actual container element first
+      let containerWidth;
+      
+      if (containerRef.current) {
+        containerWidth = containerRef.current.clientWidth;
+      } else if (acresSvgRef.current?.parentElement) {
+        containerWidth = acresSvgRef.current.parentElement.clientWidth;
+      } else {
+        // Fallback to window width if container not available yet
+        containerWidth = window.innerWidth;
+      }
+      
+      const maxWidth = 1300; // Maximum width to prevent charts from becoming too wide
+      const effectiveWidth = Math.min(containerWidth, maxWidth);
+      
+      let newChartHeight;
+      
+      if (isMobile) {
+        // Mobile layout: full width charts with proportional height
+        newChartHeight = Math.min(effectiveWidth * 0.8, 300); // 80% of width, max 300px
+      } else {
+        // Desktop layout: 2x2 grid - use full width for each chart
+        newChartHeight = 350; // Fixed height for each chart
+      }
+      
+      setChartHeight(newChartHeight);
+    };
+
+    // Add a small delay to ensure DOM is ready, then calculate dimensions
+    const timer = setTimeout(calculateDimensions, 50);
     
-    let newChartHeight;
-    
-    if (isMobile) {
-      // Mobile layout: full width charts with proportional height
-      newChartHeight = Math.min(effectiveWidth * 0.8, 300); // 40% of width, max 300px
-    } else {
-      // Desktop layout: 2x2 grid - use full width for each chart
-      newChartHeight = 350; // Fixed height for each chart
-    }
-    
-    setChartHeight(newChartHeight);
+    return () => clearTimeout(timer);
   }, [isMobile]);
 
   // Handle container resize for chart redrawing
@@ -69,9 +87,21 @@ const ChartComponentContainer = ({
       }
     };
     
+    // Add ResizeObserver to watch container size changes
+    let resizeObserver;
+    if (containerRef.current && window.ResizeObserver) {
+      resizeObserver = new ResizeObserver(() => {
+        handleResize();
+      });
+      resizeObserver.observe(containerRef.current);
+    }
+    
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       clearTimeout(resizeTimeout);
     };
   }, [data]);
@@ -108,8 +138,16 @@ const ChartComponentContainer = ({
         }));
 
     // Responsive dimensions for individual charts
-    const containerElement = acresSvgRef.current?.parentElement;
-    const containerWidth = containerElement ? containerElement.clientWidth : window.innerWidth;
+    let containerWidth;
+    
+    if (containerRef.current) {
+      containerWidth = containerRef.current.clientWidth;
+    } else if (acresSvgRef.current?.parentElement) {
+      containerWidth = acresSvgRef.current.parentElement.clientWidth;
+    } else {
+      containerWidth = window.innerWidth;
+    }
+    
     const maxWidth = 1300; // Maximum width to prevent charts from becoming too wide
     const effectiveWidth = Math.min(containerWidth, maxWidth);
     
@@ -216,7 +254,7 @@ const ChartComponentContainer = ({
     });
 
     setLoading(false);
-  }, [data, regionId, headerData, isRegional, isMobile, resizeKey]);
+  }, [data, regionId, headerData, isRegional, isMobile, resizeKey, chartHeight]);
 
   if (loading) {
     return <div>Loading chart...</div>;
@@ -227,31 +265,31 @@ const ChartComponentContainer = ({
   }
 
   return (
-    <div className={className}>
+    <div className={className} ref={containerRef}>
       <div className={`chart-grid ${isMobile ? 'mobile' : 'desktop'}`}>
         <div 
           className="chart-item" 
-          style={{ height: chartHeight + 25 + 'px' }}
+          style={{ height: chartHeight + 50 + 'px' }}
         >
-          <svg ref={acresSvgRef} style={{ height: chartHeight + 20 + 'px' }}></svg>
+          <svg ref={acresSvgRef} style={{ height: chartHeight + 50 + 'px' }}></svg>
         </div>
         <div 
           className="chart-item" 
-          style={{ height: chartHeight + 25 + 'px' }}
+          style={{ height: chartHeight + 50 + 'px' }}
         >
-          <svg ref={personnelSvgRef} style={{ height: chartHeight + 20 + 'px' }}></svg>
+          <svg ref={personnelSvgRef} style={{ height: chartHeight + 50 + 'px' }}></svg>
         </div>
         <div 
           className="chart-item" 
-          style={{ height: chartHeight + 25 + 'px' }}
+          style={{ height: chartHeight + 50 + 'px' }}
         >
-          <svg ref={resourcesSvgRef} style={{ height: chartHeight + 20 + 'px' }}></svg>
+          <svg ref={resourcesSvgRef} style={{ height: chartHeight + 50 + 'px' }}></svg>
         </div>
         <div 
           className="chart-item" 
-          style={{ height: chartHeight + 25 + 'px' }}
+          style={{ height: chartHeight + 50 + 'px' }}
         >
-          <svg ref={detailsSvgRef} style={{ height: chartHeight + 20 + 'px' }}></svg>
+          <svg ref={detailsSvgRef} style={{ height: chartHeight + 50 + 'px' }}></svg>
         </div>
       </div>
     </div>
