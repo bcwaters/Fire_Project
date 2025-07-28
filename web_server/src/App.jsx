@@ -8,15 +8,6 @@ import { RegionProvider, useRegionNames } from './RegionContext.jsx'
 import NationalAcresChart from './components/NationalAcresChart.jsx'
 import RegionAcresChart from './components/RegionAcresChart.jsx'
 
-function getTodayMDTPretty() {
-  const mdtDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Denver' }));
-  return mdtDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    timeZone: 'America/Denver'
-  });
-}
 
 function Dashboard() {
 
@@ -31,7 +22,6 @@ function Dashboard() {
   const { regionNames, loading: regionNamesLoading } = useRegionNames();
   const [isMobile, setIsMobile] = useState(false);
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
-  const [fireData, setFireData] = useState(null);
 
   // Dynamically generate regions array from regionNames keys
   const regions = Object.keys(regionNames).map(key => parseInt(key)).sort((a, b) => a - b);
@@ -95,13 +85,7 @@ function Dashboard() {
       });
   }, [today]);
 
-  useEffect(() => {
-    fetch(`data/${today}/fire_summary_${today}.json`)
-      .then(response => response.json())
-      .then(data => {
-        setFireData(data);
-      });
-  }, [today]);
+
 
   if (loading || summaryLoading || regionNamesLoading) {
     return (
@@ -152,7 +136,7 @@ function Dashboard() {
       <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
           <h2>National Fire Summary</h2>
           <div className="graph-wrapper">
-            <NationalAcresChart data={fireData} isMobile={isMobile} />
+            <NationalAcresChart isMobile={isMobile} />
           </div>
         </div>
         {regions.map((region) => (

@@ -1,13 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AcresChart from './AcresChart';
 
-const NationalAcresChart = ({ data, isMobile = false }) => {
+const NationalAcresChart = ({ isMobile = false }) => {
   const svgRef = useRef();
   const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    
+    fetch(`/data/${today}/fire_summary_${today}.json`)
+      .then(response => {
+        if (!response.ok) throw new Error('National data not found');
+        return response.json();
+      })
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error loading national data:', err);
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
     if (!data || data.length === 0) {
-      setLoading(false);
       return;
     }
 
@@ -67,11 +87,14 @@ const NationalAcresChart = ({ data, isMobile = false }) => {
       isMobile: isMobile
     });
 
-    setLoading(false);
   }, [data, isMobile]);
 
   if (loading) {
     return <div className="loading-chart">Loading chart...</div>;
+  }
+
+  if (error) {
+    return <div className="error-message">Chart not available for national summary</div>;
   }
 
   if (!data || data.length === 0) {
