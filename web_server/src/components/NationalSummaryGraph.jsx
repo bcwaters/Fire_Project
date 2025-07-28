@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
-import ChartContainer from './components/ChartContainer';
-import ChartComponentContainer from './components/ChartComponentContainer';
-import './RegionalDataGraph.css';
+import React, { useEffect, useRef, useState } from 'react';
+import ChartContainerDownload from './ChartContainerDownload';
+import '../styles/NationalSummaryGraph.css';
+import ChartComponentContainer from './ChartComponentContainer';
 
-const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => {
+const NationalSummaryGraph = ({ data, headerData, setDownloadGraph }) => {
   const chartContainerRef = useRef();
   const [showDownloadContainer, setShowDownloadContainer] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -36,7 +36,7 @@ const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => 
       
       // Set a reasonable fixed width for download (1200px is a good standard width)
       const downloadWidth = 1200;
-      const downloadHeight = 1600;
+      const downloadHeight = 1000;
       
       clonedSvg.setAttribute('width', downloadWidth);
       clonedSvg.setAttribute('height', downloadHeight);
@@ -50,7 +50,7 @@ const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => 
       const url = URL.createObjectURL(blob);
       
       const link = document.createElement('a');
-      link.download = `region-${regionId}-${new Date().toISOString().split('T')[0]}.svg`;
+      link.download = `national-summary-${new Date().toISOString().split('T')[0]}.svg`;
       link.href = url;
       link.click();
       
@@ -68,13 +68,12 @@ const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => 
   }, []); // Empty dependency array since we only want to set it once
 
   return (
-    <div className="regional-data-graph-container">
+    <div className="national-summary-graph-container">
       <ChartComponentContainer
         data={data}
-        regionId={regionId}
         headerData={headerData}
-        isRegional={true}
-        className="regional-data-graph"
+        isRegional={false}
+        className="national-summary-graph"
       />
       <div 
         ref={chartContainerRef} 
@@ -87,12 +86,11 @@ const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => 
           width: windowWidth + 'px'
         }}
       >
-        <ChartContainer
+        <ChartContainerDownload
           data={data}
-          regionId={regionId}
           headerData={headerData}
-          isRegional={true}
-          className="regional-data-graph"
+          isRegional={false}
+          className="national-summary-graph"
           windowWidth={windowWidth}
         />
       </div>
@@ -100,4 +98,4 @@ const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => 
   );
 };
 
-export default RegionalDataGraph;
+export default NationalSummaryGraph; 

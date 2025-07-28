@@ -4,7 +4,7 @@ import PersonnelChart from './PersonnelChart';
 import ResourcesChart from './ResourcesChart';
 import DetailsTable from './DetailsTable';
 
-const ChartContainer = ({ 
+const ChartContainerDownload = ({ 
   data, 
   regionId, 
   headerData, 
@@ -98,11 +98,12 @@ const ChartContainer = ({
     if (isMobile) {
       // Mobile layout: single column, full width
       width = effectiveWidth;
-      height = 1200; // Taller for stacked layout
+      // Increase height for national data which has more rows in the details table
+      height = isRegional ? 1200 : 1200; // Taller for national data
       gap = 20;
       verticalGap = 40;
       subplotWidth = width;
-      subplotHeight = 250; // Fixed height for each chart
+      subplotHeight = isRegional ? 250 : 220; 
     } else {
       // Desktop layout: 2x2 grid, full width
       width = effectiveWidth;
@@ -115,8 +116,9 @@ const ChartContainer = ({
 
     // Create SVG container - no margins
     const svg = d3.select(svgRef.current)
-      .attr('width', width)
+      .attr('width', isMobile ? 500: width)
       .attr('height', height)
+      .style('background-color', 'white')
       .append('g');
 
     // Create chart container IDs for individual components
@@ -220,4 +222,4 @@ const ChartContainer = ({
   );
 };
 
-export default ChartContainer; 
+export default ChartContainerDownload; 

@@ -1,5 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import './App.css';
+import './styles/App.css';
 import { useState, useEffect } from 'react';
 import fireGraphIcon from './assets/fire_graph_icon.png';
 import { useRegionNames } from './RegionContext.jsx';

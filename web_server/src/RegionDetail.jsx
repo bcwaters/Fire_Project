@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import './App.css';
-import RegionalDataGraph from './RegionalDataGraph.jsx';
+import './styles/App.css';
+import RegionalDataGraph from './components/RegionalDataGraph.jsx';
 import { useRegionNames } from './RegionContext.jsx';
 
 function getTodayMDTPretty() {

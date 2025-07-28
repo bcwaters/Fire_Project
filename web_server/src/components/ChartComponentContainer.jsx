@@ -3,7 +3,7 @@ import AcresChart from './AcresChart';
 import PersonnelChart from './PersonnelChart';
 import ResourcesChart from './ResourcesChart';
 import DetailsTable from './DetailsTable';
-import './ChartComponentContainer.css';
+import '../styles/ChartComponentContainer.css';
 
 const ChartComponentContainer = ({ 
   data, 

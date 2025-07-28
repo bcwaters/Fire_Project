@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import './App.css';
+import './styles/App.css';
 import { useEffect, useState, useCallback } from 'react';
-import NationalSummaryGraph from './NationalSummaryGraph.jsx';
+import NationalSummaryGraph from './components/NationalSummaryGraph.jsx';
 
 function getTodayMDTPretty() {
   const mdtDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Denver' }));
