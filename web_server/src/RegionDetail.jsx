@@ -79,7 +79,11 @@ function RegionDetail() {
           );
           regionKey = foundKey || regionKey;
         }
-        setRegionSummary(summaryJson[regionKey] || null);
+
+        //replace each line with is an empty string with a new line
+        const summaryLines = summaryJson[regionKey] || [];
+        const summaryLinesWithNewLines = summaryLines.map(line => line.replace(/^\s*$/, '\n\n'));
+        setRegionSummary(summaryLinesWithNewLines);
       } catch (err) {
         setSummaryError('Could not load region summary.');
       } finally {
@@ -138,7 +142,7 @@ function RegionDetail() {
           {summaryLoading && <p className="predictive-summary-loading">Loading region summary...</p>}
           {summaryError && <p className="predictive-summary-error">{summaryError}</p>}
           {!summaryLoading && !summaryError && regionSummary && (
-            <pre className="predictive-summary-text">{regionSummary.join('\n')}</pre>
+            <pre className="predictive-summary-text">{regionSummary.join('')}</pre>
           )}
           {!summaryLoading && !summaryError && !regionSummary && (
             <p className="predictive-summary-error">No summary available for this region.</p>

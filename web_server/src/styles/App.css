@@ -247,6 +247,7 @@
 }
 
 .region-detail-title {
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0;

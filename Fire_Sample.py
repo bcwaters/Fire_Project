@@ -62,7 +62,12 @@ def parse_pred_services(lines, data_dir):
     for idx, line in enumerate(lines):
         if 'Predictive Services' in line:
             summary_lines = lines[idx+1:]
-            summary_str = '\n'.join(summary_lines).strip()
+            #replace each line with is an empty string with a new line
+            for i, line in enumerate(summary_lines):
+                if line.strip()  == '':
+                    summary_lines[i] = '\n\n'
+
+            summary_str = ''.join(summary_lines).strip()
             out_path = os.path.join(data_dir, 'predictive_summary.txt')
             with open(out_path, 'w', encoding='utf-8') as f:
                 f.write(summary_str)
