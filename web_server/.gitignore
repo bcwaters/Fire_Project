@@ -7,7 +7,12 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-data
+# Data directory - exclude everything except favicon
+data/*
+!data/favicon.ico
+!data/public/
+data/public/*
+!data/public/favicon/
 
 __pycache__
 
