@@ -85,7 +85,7 @@ function Dashboard() {
       });
   }, [today]);
 
-
+  
 
   if (loading || summaryLoading || regionNamesLoading) {
     return (

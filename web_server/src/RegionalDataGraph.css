@@ -16,6 +16,35 @@
   background: #f5f5f5;
 }
 
+/* Modern grid layout matching ChartComponentContainer */
+.regional-data-graph .chart-grid {
+  display: grid;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.regional-data-graph .chart-grid.mobile {
+  grid-template-columns: 1fr;
+}
+
+.regional-data-graph .chart-grid.desktop {
+  grid-template-columns: 1fr 1fr;
+}
+
+.regional-data-graph .chart-item {
+  box-shadow: 0 4px 8px #a37d1d0c;
+  border-radius: 0px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.regional-data-graph .chart-item svg {
+  width: 100%;
+}
+
 .save-controls {
   display: flex;
   justify-content: flex-end;
@@ -45,8 +74,6 @@
   background: #ffd54f;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
-
-
 
 .regional-data-graph svg {
   display: block;
@@ -108,7 +135,6 @@
   .regional-data-graph svg {
     width: 100%;
     height: auto;
-    min-height: 1200px; /* Ensure enough height for stacked layout */
   }
 
   /* Mobile-specific axis styles */

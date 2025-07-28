@@ -79,6 +79,8 @@
 
 .national-summary-detail{
   margin-top: 10px;
+  padding-right: .6rem;
+  padding-left: .4rem;
 }
 
 .national-summary-graph text {
@@ -105,7 +107,7 @@
   .national-summary-graph svg {
     width: 100%;
     height: auto;
-    min-height: 1200px; /* Ensure enough height for stacked layout */
+   
   }
 
   /* Mobile-specific axis styles */

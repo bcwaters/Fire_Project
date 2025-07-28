@@ -40,12 +40,12 @@ const NationalAcresChart = ({ isMobile = false }) => {
         return {
           name: incident['GACC'] || 'Unknown',
           totalAcres: parseFloat((incident['Cumulative Acres'] || '0').replace(/,/g, '')) || 0,
-          incidents: parseInt(incident['Incidents']) || 0,
+      incidents: parseInt(incident['Incidents']) || 0,
           personnel: parseInt((incident['Total Personnel'] || '0').replace(/,/g, '')) || 0,
-          changePersonnel: parseInt(incident['Change in Personnel']) || 0,
-          crews: parseInt(incident['Crews']) || 0,
-          engines: parseInt(incident['Engines']) || 0,
-          helicopters: parseInt(incident['Helicopters']) || 0
+      changePersonnel: parseInt(incident['Change in Personnel']) || 0,
+      crews: parseInt(incident['Crews']) || 0,
+      engines: parseInt(incident['Engines']) || 0,
+      helicopters: parseInt(incident['Helicopters']) || 0
         };
       } catch (error) {
         console.error('Error parsing incident data:', error, incident);

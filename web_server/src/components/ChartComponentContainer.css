@@ -1,0 +1,33 @@
+.chart-component-container {
+  /* Container styles */
+}
+
+.chart-grid {
+  display: grid;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.chart-grid.mobile {
+  grid-template-columns: 1fr;
+}
+
+.chart-grid.desktop {
+  grid-template-columns: 1fr 1fr;
+}
+
+.chart-item {
+  box-shadow: 0 4px 8px #a37d1d0c;
+  border-radius: 0px;
+  width: 100%;
+  transition: all 0.3s ease;
+
+}
+
+
+.chart-item svg {
+  width: 100%;
+} 

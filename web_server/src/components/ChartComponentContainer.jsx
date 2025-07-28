@@ -3,19 +3,23 @@ import AcresChart from './AcresChart';
 import PersonnelChart from './PersonnelChart';
 import ResourcesChart from './ResourcesChart';
 import DetailsTable from './DetailsTable';
+import './ChartComponentContainer.css';
 
-const ChartContainer = ({ 
+const ChartComponentContainer = ({ 
   data, 
   regionId, 
   headerData, 
   isRegional = true,
-  className = "chart-container",
-  windowWidth = null
+  className = "chart-component-container"
 }) => {
-  const svgRef = useRef();
+  const acresSvgRef = useRef();
+  const personnelSvgRef = useRef();
+  const resourcesSvgRef = useRef();
+  const detailsSvgRef = useRef();
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [resizeKey, setResizeKey] = useState(0); // Add key to force re-render on resize
+  const [chartHeight, setChartHeight] = useState(350); // Default height
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -27,6 +31,26 @@ const ChartContainer = ({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Calculate chart dimensions when mobile state changes
+  useEffect(() => {
+    const containerElement = acresSvgRef.current?.parentElement;
+    const containerWidth = containerElement ? containerElement.clientWidth : window.innerWidth;
+    const maxWidth = 1300; // Maximum width to prevent charts from becoming too wide
+    const effectiveWidth = Math.min(containerWidth, maxWidth);
+    
+    let newChartHeight;
+    
+    if (isMobile) {
+      // Mobile layout: full width charts with proportional height
+      newChartHeight = Math.min(effectiveWidth * 0.8, 300); // 40% of width, max 300px
+    } else {
+      // Desktop layout: 2x2 grid - use full width for each chart
+      newChartHeight = 350; // Fixed height for each chart
+    }
+    
+    setChartHeight(newChartHeight);
+  }, [isMobile]);
 
   // Handle container resize for chart redrawing
   useEffect(() => {
@@ -58,9 +82,6 @@ const ChartContainer = ({
       return;
     }
 
-    // Clear previous content
-    d3.select(svgRef.current).selectAll("*").remove();
-
     // Parse and clean data similar to Python visualization
     const processedData = isRegional 
       ? data.map(incident => ({
@@ -86,70 +107,71 @@ const ChartContainer = ({
           helicopters: parseInt(incident['Helicopters']) || 0
         }));
 
-    // Responsive dimensions - no margins
-    let width, height, gap, verticalGap, subplotWidth, subplotHeight;
-    
-    // Get the actual container width instead of window width
-    const containerElement = svgRef.current?.parentElement;
+    // Responsive dimensions for individual charts
+    const containerElement = acresSvgRef.current?.parentElement;
     const containerWidth = containerElement ? containerElement.clientWidth : window.innerWidth;
     const maxWidth = 1300; // Maximum width to prevent charts from becoming too wide
-    const effectiveWidth = Math.min(windowWidth || containerWidth, maxWidth);
+    const effectiveWidth = Math.min(containerWidth, maxWidth);
+    
+    let chartWidth;
     
     if (isMobile) {
-      // Mobile layout: single column, full width
-      width = effectiveWidth;
-      height = 1200; // Taller for stacked layout
-      gap = 20;
-      verticalGap = 40;
-      subplotWidth = width;
-      subplotHeight = 250; // Fixed height for each chart
+      // Mobile layout: full width charts with proportional height
+      chartWidth = effectiveWidth;
     } else {
-      // Desktop layout: 2x2 grid, full width
-      width = effectiveWidth;
-      height = 800;
-      gap = 40; // Horizontal gap between columns
-      verticalGap = 60; // Vertical gap between rows
-      subplotWidth = (width - gap) / 2;
-      subplotHeight = ((height - verticalGap) / 2) - 35;
+      // Desktop layout: 2x2 grid - use full width for each chart
+      chartWidth = effectiveWidth; // Use full width instead of dividing by 2
     }
 
-    // Create SVG container - no margins
-    const svg = d3.select(svgRef.current)
-      .attr('width', width)
-      .attr('height', height)
+    // Clear and create Acres Chart SVG
+    d3.select(acresSvgRef.current).selectAll("*").remove();
+    const acresSvg = d3.select(acresSvgRef.current)
+      .attr('width', chartWidth)
+      .attr('height', chartHeight)
       .append('g');
 
-    // Create chart container IDs for individual components
-    const chartContainerId = `chart-container-${Date.now()}`;
-    svg.attr('id', chartContainerId);
+    // Clear and create Personnel Chart SVG
+    d3.select(personnelSvgRef.current).selectAll("*").remove();
+    const personnelSvg = d3.select(personnelSvgRef.current)
+      .attr('width', chartWidth)
+      .attr('height', chartHeight)
+      .append('g');
 
-    // Chart positioning based on layout
-    let chart1X = 0, chart1Y = isMobile ? 0 : 40; // Add top margin for desktop
-    let chart2X = isMobile ? 0 : subplotWidth + gap, chart2Y = isMobile ? subplotHeight + verticalGap : 40;
-    let chart3X = 0, chart3Y = isMobile ? 2 * (subplotHeight + verticalGap) : subplotHeight + verticalGap + 40;
-    let chart4X = isMobile ? 0 : subplotWidth + gap, chart4Y = isMobile ? 3 * (subplotHeight + verticalGap) : subplotHeight + verticalGap + 40;
+    // Clear and create Resources Chart SVG
+    d3.select(resourcesSvgRef.current).selectAll("*").remove();
+    const resourcesSvg = d3.select(resourcesSvgRef.current)
+      .attr('width', chartWidth)
+      .attr('height', chartHeight)
+      .append('g');
+
+    // Clear and create Details Table SVG
+    d3.select(detailsSvgRef.current).selectAll("*").remove();
+    const detailsSvg = d3.select(detailsSvgRef.current)
+      .attr('width', chartWidth)
+      .attr('height', chartHeight)
+      .append('g');
 
     // Chart 1: Total Acres and Containment
     if (isRegional) {
       AcresChart({ 
-        svg: svg,
+        svg: acresSvg,
         data: processedData, 
-        width: subplotWidth, 
-        height: subplotHeight, 
-        xOffset: chart1X, 
-        yOffset: chart1Y,
+        width: chartWidth, 
+        height: chartHeight, 
+        xOffset: 0, 
+        yOffset: 0,
         title: 'Total Acres and Containment',
         showContainment: true,
         isMobile: isMobile
       });
     } else {
       AcresChart({ 
-        svg: svg,
+        svg: acresSvg,
         data: processedData, 
-        width: subplotWidth, 
-        height: subplotHeight, 
-        xOffset: chart1X, 
-        yOffset: chart1Y,
+        width: chartWidth, 
+        height: chartHeight, 
+        xOffset: 0, 
+        yOffset: 0,
         title: 'Cumulative Acres by GACC',
         showContainment: false,
         isMobile: isMobile
@@ -158,52 +180,43 @@ const ChartContainer = ({
     
     // Chart 2: Personnel
     PersonnelChart({ 
-      svg: svg,
+      svg: personnelSvg,
       data: processedData, 
-      width: subplotWidth, 
-      height: subplotHeight, 
-      xOffset: chart2X, 
-      yOffset: chart2Y,
+      width: chartWidth, 
+      height: chartHeight, 
+      xOffset: 0, 
+      yOffset: 0,
       title: isRegional ? 'Personnel' : 'Personnel by GACC',
       isMobile: isMobile
     });
     
     // Chart 3: Resources
     ResourcesChart({ 
-      svg: svg,
+      svg: resourcesSvg,
       data: processedData, 
-      width: subplotWidth, 
-      height: subplotHeight, 
-      xOffset: chart3X, 
-      yOffset: chart3Y,
+      width: chartWidth, 
+      height: chartHeight, 
+      xOffset: 0, 
+      yOffset: 0,
       title: isRegional ? 'Resources' : 'Resources by GACC',
       isMobile: isMobile
     });
     
     // Chart 4: Details Table
     DetailsTable({ 
-      svg: svg,
+      svg: detailsSvg,
       data: processedData, 
-      width: subplotWidth, 
-      height: subplotHeight, 
-      xOffset: chart4X, 
-      yOffset: chart4Y,
+      width: chartWidth, 
+      height: chartHeight, 
+      xOffset: 0, 
+      yOffset: 0,
       title: 'Details',
       isRegional: isRegional,
       isMobile: isMobile
     });
 
-    // Add title
-    svg.append('text')
-      .attr('x', width / 2)
-      .attr('y', 20)
-      .attr('text-anchor', 'middle')
-      .style('font-size', isMobile ? '14px' : '18px')
-      .style('font-weight', 'bold')
-      .text('');
-
     setLoading(false);
-  }, [data, regionId, headerData, isRegional, isMobile, resizeKey, windowWidth]);
+  }, [data, regionId, headerData, isRegional, isMobile, resizeKey]);
 
   if (loading) {
     return <div>Loading chart...</div>;
@@ -215,9 +228,34 @@ const ChartContainer = ({
 
   return (
     <div className={className}>
-      <svg ref={svgRef}></svg>
+      <div className={`chart-grid ${isMobile ? 'mobile' : 'desktop'}`}>
+        <div 
+          className="chart-item" 
+          style={{ height: chartHeight + 25 + 'px' }}
+        >
+          <svg ref={acresSvgRef} style={{ height: chartHeight + 20 + 'px' }}></svg>
+        </div>
+        <div 
+          className="chart-item" 
+          style={{ height: chartHeight + 25 + 'px' }}
+        >
+          <svg ref={personnelSvgRef} style={{ height: chartHeight + 20 + 'px' }}></svg>
+        </div>
+        <div 
+          className="chart-item" 
+          style={{ height: chartHeight + 25 + 'px' }}
+        >
+          <svg ref={resourcesSvgRef} style={{ height: chartHeight + 20 + 'px' }}></svg>
+        </div>
+        <div 
+          className="chart-item" 
+          style={{ height: chartHeight + 25 + 'px' }}
+        >
+          <svg ref={detailsSvgRef} style={{ height: chartHeight + 20 + 'px' }}></svg>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default ChartContainer; 
+export default ChartComponentContainer; 
