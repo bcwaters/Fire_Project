@@ -31,20 +31,25 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     .domain([0, d3.max(data, d => d.totalAcres)])
     .range([chartHeight, 0]);
 
-  // Add bars for total acres
+  // Add bars for total acres with transition
   chartGroup.selectAll('.acres-bar')
     .data(data)
     .enter()
     .append('rect')
     .attr('class', 'acres-bar')
     .attr('x', d => x(d.name) + internalMargin.left)
-    .attr('y', d => y(d.totalAcres) + internalMargin.top)
+    .attr('y', chartHeight + internalMargin.top) // Start from bottom
     .attr('width', Math.min(x.bandwidth() / 2, isMobile ? 20 : 40))
-    .attr('height', d => chartHeight - y(d.totalAcres))
+    .attr('height', 0) // Start with height 0
     .attr('fill', '#36454F') // Charcoal
-    .attr('opacity', 0.7);
+    .attr('opacity', 0.7)
+    .transition()
+    .duration(750) // 750ms transition duration
+    .ease(d3.easeCubicOut) // Smooth easing function
+    .attr('y', d => y(d.totalAcres) + internalMargin.top)
+    .attr('height', d => chartHeight - y(d.totalAcres));
 
-  // Add bars for scaled containment (if enabled)
+  // Add bars for scaled containment (if enabled) with transition
   if (showContainment && data[0].containedPercent !== undefined) {
     chartGroup.selectAll('.containment-bar')
       .data(data)
@@ -52,11 +57,16 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
       .append('rect')
       .attr('class', 'containment-bar')
       .attr('x', d => x(d.name) + x.bandwidth() / 2 + internalMargin.left)
-      .attr('y', d => y((d.containedPercent / 100) * d.totalAcres) + internalMargin.top)
+      .attr('y', chartHeight + internalMargin.top) // Start from bottom
       .attr('width', Math.min(x.bandwidth() / 2, isMobile ? 20 : 40))
-      .attr('height', d => chartHeight - y((d.containedPercent / 100) * d.totalAcres))
+      .attr('height', 0) // Start with height 0
       .attr('fill', '#4e8a4e') // Pastel grey-green
-      .attr('opacity', 1);
+      .attr('opacity', 1)
+      .transition()
+      .duration(750) // 750ms transition duration
+      .ease(d3.easeCubicOut) // Smooth easing function
+      .attr('y', d => y((d.containedPercent / 100) * d.totalAcres) + internalMargin.top)
+      .attr('height', d => chartHeight - y((d.containedPercent / 100) * d.totalAcres));
   }
 
   // Add axes

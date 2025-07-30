@@ -31,31 +31,41 @@ const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'P
     .domain([d3.min(data, d => d.changePersonnel) * 1.1, d3.max(data, d => Math.max(d.personnel, Math.abs(d.changePersonnel)))])
     .range([chartHeight, 0]);
 
-  // Add bars for total personnel
+  // Add bars for total personnel with transition
   chartGroup.selectAll('.personnel-bar')
     .data(data)
     .enter()
     .append('rect')
     .attr('class', 'personnel-bar')
     .attr('x', d => x(d.name) + internalMargin.left)
-    .attr('y', d => y(Math.max(0, d.personnel)) + internalMargin.top) // Start at zero or personnel value
+    .attr('y', chartHeight + internalMargin.top) // Start from bottom
     .attr('width', Math.min(x.bandwidth() / 2, isMobile ? 20 : 40))
-    .attr('height', d => Math.abs(y(d.personnel) - y(0))) // Height from zero to personnel
+    .attr('height', 0) // Start with height 0
     .attr('fill', '#36454F') // Charcoal
-    .attr('opacity', 0.7);
+    .attr('opacity', 0.7)
+    .transition()
+    .duration(750) // 750ms transition duration
+    .ease(d3.easeCubicOut) // Smooth easing function
+    .attr('y', d => y(Math.max(0, d.personnel)) + internalMargin.top)
+    .attr('height', d => Math.abs(y(d.personnel) - y(0)));
 
-  // Add bars for change in personnel
+  // Add bars for change in personnel with transition
   chartGroup.selectAll('.change-bar')
     .data(data)
     .enter()
     .append('rect')
     .attr('class', 'change-bar')
     .attr('x', d => x(d.name) + x.bandwidth() / 2 + internalMargin.left)
-    .attr('y', d => (d.changePersonnel >= 0 ? y(d.changePersonnel) : y(0)) + internalMargin.top) // Start at zero for negative values
+    .attr('y', chartHeight + internalMargin.top) // Start from bottom
     .attr('width', Math.min(x.bandwidth() / 2, isMobile ? 20 : 40))
-    .attr('height', d => Math.abs(y(d.changePersonnel) - y(0))) // Use absolute difference for height
+    .attr('height', 0) // Start with height 0
     .attr('fill', d => d.changePersonnel < 0 ? '#8b2513' : '#4e8a4e') // Dark grey-red for negative, pastel grey-green for positive
-    .attr('opacity', 0.7);
+    .attr('opacity', 0.7)
+    .transition()
+    .duration(750) // 750ms transition duration
+    .ease(d3.easeCubicOut) // Smooth easing function
+    .attr('y', d => (d.changePersonnel >= 0 ? y(d.changePersonnel) : y(0)) + internalMargin.top)
+    .attr('height', d => Math.abs(y(d.changePersonnel) - y(0)));
 
   // Add axes
   chartGroup.append('g')

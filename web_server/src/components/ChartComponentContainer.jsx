@@ -254,7 +254,7 @@ const ChartComponentContainer = ({
     });
 
     setLoading(false);
-  }, [data, regionId, headerData, isRegional, isMobile, resizeKey, chartHeight]);
+  }, [data, regionId, headerData, isRegional, isMobile,  chartHeight]);
 
   if (loading) {
     return <div>Loading chart...</div>;
