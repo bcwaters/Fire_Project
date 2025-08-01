@@ -3,6 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import Layout from "./Layout";
 import { twMerge } from "tailwind-merge";
+import Summary from "./Summary";
 
 function App() {
 	const regions = [
@@ -22,7 +23,7 @@ function App() {
 			<nav className="w-full bg-amber-500 p-4 md:hidden flex justify-center item-center">
 				<select
 					value={selectedRegion}
-					className="border-white outline-none text-xl"
+					className="border-white border p-1 border-2 rounded-md text-white outline-none text-xl"
 					onChange={(e) =>
 						setSelectedRegion(
 							e.target.value as (typeof regions)[number]
@@ -61,11 +62,7 @@ function App() {
 							<h1 className="font-bold text-3xl pb-2">
 								{selectedRegion}
 							</h1>
-							<desc>
-								{
-									"National Fire Activity: \nFire Activity  and Teams  Assigned  Totals  \nInitial attack activity:  Light (134 fires) \nNew large incidents:  2 \nLarge fires contained:  2 \nUncontained large fires:  30 \nCIMTs committed:  14 \nNIMOs committed:  1 \n Nationally, there are 18 fires being managed under a strategy other than full suppression.  Fifteen fires are in \nAlaska.  Three  fires..."
-								}
-							</desc>
+							<Summary />
 						</div>
 						<div className="h-full w-full p-3">
 							<div className="grid grid-cols-2 gap-4 h-full">
