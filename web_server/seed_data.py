@@ -335,10 +335,13 @@ def main():
 
     regions = detect_region(file_text.splitlines())
     regions_dir = os.path.join(data_dir, 'regions')
+    
     os.makedirs(regions_dir, exist_ok=True)
     region_key = {}
     for idx, r in enumerate(regions, 1):
+      
          region_data = parse_region_table(file_text.splitlines(), r)
+         print(region_data)
         
          # Save each region's data as a JSON file in data/TODAY/regions
          # visualize_region_data(idx, r, region_data, regions_dir, header_data)
