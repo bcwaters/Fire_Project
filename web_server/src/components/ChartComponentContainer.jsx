@@ -126,12 +126,14 @@ const ChartComponentContainer = ({
           helicopters: parseInt(incident['Heli']) || 0,
           costToDate: incident['$$ CTD'] || '0'
         }))
-      : data.map(incident => ({
+      : data.map(incident => (
+        console.log("incident:", incident),
+        {
           name: incident['GACC'],
-          totalAcres: parseFloat(incident['Cumulative Acres'].replace(',', '')) || 0,
+          totalAcres: parseInt(incident['Cumulative Acres'].replaceAll(',', '')) || 0,
           incidents: parseInt(incident['Incidents']) || 0,
-          personnel: parseInt(incident['Total Personnel'].replace(',', '')) || 0,
-          changePersonnel: parseInt(incident['Change in Personnel']) || 0,
+          personnel: parseInt(incident['Total Personnel'].replaceAll(',', '')) || 0,
+          changePersonnel: parseInt(incident['Change in Personnel'].replaceAll(',', '')) || 0,
           crews: parseInt(incident['Crews']) || 0,
           engines: parseInt(incident['Engines']) || 0,
           helicopters: parseInt(incident['Helicopters']) || 0

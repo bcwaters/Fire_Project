@@ -19,6 +19,10 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
       return 'N/A';
     }
     
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(3) + 'M';
+    }
+    
     if (num >= 1000) {
       return (num / 1000).toFixed(1) + 'k';
     }
@@ -127,6 +131,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
         .style('font-family', 'monospace')
         .text(convertNumber(row.personnel));
 
+  
       // Cost
       chartGroup.append('text')
         .attr('x', internalMargin.left + firstColWidth + 5 * otherColWidth + 5)
@@ -137,6 +142,7 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
     } else {
       // National summary data layout
       // GACC
+      console.log("national row:", row);
       chartGroup.append('text')
         .attr('x', internalMargin.left + 5)
         .attr('y', yPos)
