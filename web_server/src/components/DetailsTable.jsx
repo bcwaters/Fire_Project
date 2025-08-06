@@ -15,6 +15,10 @@ const DetailsTable = ({ svg, data, width, height, xOffset, yOffset, title = 'Det
   const tableHeight = height - internalMargin.top - internalMargin.bottom;
 
   const convertNumber = (num) => {
+    if (num === null || num === undefined) {
+      return 'N/A';
+    }
+    
     if (num >= 1000) {
       return (num / 1000).toFixed(1) + 'k';
     }

@@ -2,9 +2,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const RegionContext = createContext();
 
-export function RegionProvider({ children }) {
+export function RegionProvider({ children, today }) {
   // Use a known working date instead of today's date
-  const today = '20250728'; // Hardcoded for testing
   const [regionNames, setRegionNames] = useState({});
   const [loading, setLoading] = useState(true);
 

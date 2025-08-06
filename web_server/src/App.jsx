@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom'
 import RegionDetail from './RegionDetail.jsx'
 import Layout from './Layout.jsx'
@@ -8,10 +8,11 @@ import { RegionProvider, useRegionNames } from './RegionContext.jsx'
 import NationalAcresChart from './components/NationalAcresChart.jsx'
 import RegionAcresChart from './components/RegionAcresChart.jsx'
 
-
 function Dashboard() {
+  const today = useMemo(() => {
+    return new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  }, []);
 
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const [loading, setLoading] = useState(false); // regionNames now comes from props
   const [summary, setSummary] = useState('');
   const [summaryLoading, setSummaryLoading] = useState(true);
@@ -136,7 +137,7 @@ function Dashboard() {
       <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
           <h2>National Fire Summary</h2>
           <div className="graph-wrapper">
-            <NationalAcresChart isMobile={isMobile} />
+            <NationalAcresChart isMobile={isMobile} today={today}/>
           </div>
         </div>
         {regions.map((region) => (
@@ -146,6 +147,7 @@ function Dashboard() {
               <RegionAcresChart 
                 regionId={region} 
                 regionName={regionNames[region] || `Region ${region}`}
+                today={today}
                 isMobile={isMobile}
               />
             </div>
@@ -157,14 +159,18 @@ function Dashboard() {
 }
 
 function App() {
+  const today = useMemo(() => {
+    return new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  }, []);
+  
   return (
-    <RegionProvider>
+    <RegionProvider today={today}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
-            <Route path="region/:regionId" element={<RegionDetail />} />
-            <Route path="national" element={<NationalSummary  />} />
+            <Route path="region/:regionId" element={<RegionDetail today={today} />} />
+            <Route path="national" element={<NationalSummary today={today} />} />
           </Route>
         </Routes>
       </BrowserRouter>

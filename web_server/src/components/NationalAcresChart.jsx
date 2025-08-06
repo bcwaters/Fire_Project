@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AcresChart from './AcresChart';
 
-const NationalAcresChart = ({ isMobile = false }) => {
+  const NationalAcresChart = ({ isMobile = false, today }) => {
   const svgRef = useRef();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
@@ -9,7 +9,6 @@ const NationalAcresChart = ({ isMobile = false }) => {
 
   useEffect(() => {
     // Use the same date as the RegionProvider
-    const today = '20250728'; // Hardcoded for testing
     
     fetch(`/data/${today}/fire_summary_${today}.json`)
       .then(response => {

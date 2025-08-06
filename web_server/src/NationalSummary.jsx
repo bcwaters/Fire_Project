@@ -14,10 +14,8 @@ function getTodayMDTPretty() {
   });
 }
 
-function NationalSummary() {
+function NationalSummary({ today }) {
   
-  // Use the same date as the RegionProvider
-  const today = '20250728'; // Hardcoded for testing
   const todayPrettyMDT = getTodayMDTPretty();
   const navigate = useNavigate();
   const [summary, setSummary] = useState('');
@@ -65,7 +63,7 @@ function NationalSummary() {
         console.error('Error loading fire data:', err);
         setFireDataLoading(false);
       });
-  }, [today]);
+  }, []);
 
   // Show loading state while region names are being fetched
   if (regionNamesLoading) {

@@ -14,11 +14,11 @@ function getTodayMDTPretty() {
   });
 }
 
-function RegionDetail() {
+function RegionDetail({ today } ) {
   const { regionId } = useParams();
   const navigate = useNavigate();
   // Use the same date as the RegionProvider
-  const today = '20250728'; // Hardcoded for testing
+
   const todayPrettyMDT = getTodayMDTPretty();
   const [regionData, setRegionData] = useState(null);
   const [loading, setLoading] = useState(true);

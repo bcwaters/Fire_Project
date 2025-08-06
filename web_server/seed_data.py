@@ -64,7 +64,7 @@ def parse_pred_services(lines, data_dir):
             summary_lines = lines[idx+1:]
             #replace each line with is an empty string with a new line
             for i, line in enumerate(summary_lines):
-                if line.strip() == '':
+                if line.strip()  == '':
                     summary_lines[i] = '\n\n'
 
             summary_str = ''.join(summary_lines).strip()
