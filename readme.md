@@ -12,4 +12,4 @@ now simply run the server
 ```npm run dev```
 
 ## Backend
-This is running on an ec2 server which is collecting daily data with cron job and then serving files directly with NGINX
+This is running on an ec2 server which is collecting daily data with cron job and then serving files directly with NGINX.  Refer to the infra directory for more info.
