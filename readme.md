@@ -1,8 +1,10 @@
 # Fire Project
   Gather daily data for wildland firefighting incidents
 
+
+
 ## Running Locally
-In order to run locally the server needs current data.
+In order to run locally the server needs current data. Currently data is parsed from the Daily SIT report pdf. The seed data script will send a curl request to download the pdf locally.  
 From the web_server directory run the python script seed_data.py
 ```python seed_data.py```
 

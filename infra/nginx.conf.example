@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name zingpng.com;
+    server_name  wildfiregraphs.com *.wildfiregraphs.com *.zingpng.com zingpng.com;
     root /home/ubuntu/fire_project/Fire_Project/dist;
     index index.html;
 
@@ -14,7 +14,13 @@ server {
         alias /home/ubuntu/fire_project/Fire_Project/data/;
         expires 1h;
         add_header Cache-Control "public, immutable";
-    }
+        
+	 # Make sure index.html inside /data/ only loads on directory access
+         index index.html;
+
+         # Serve files if they exist
+         try_files $uri =404; 
+ }
 
     # Serve static assets
     location /assets/ {
