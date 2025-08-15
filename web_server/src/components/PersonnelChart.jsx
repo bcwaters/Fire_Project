@@ -21,51 +21,62 @@ const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'P
     return num.toString();
   };
 
+  const numOfBars = 2;
+  const spacingWithinGroup = 2;
+
   // Scales
   const x = d3.scaleBand()
     .domain(data.map(d => d.name))
     .range([0, chartWidth])
-    .padding(0.05);
+    .padding(0.1);
+
+  const barWidth = Math.min((x.bandwidth() - spacingWithinGroup) / numOfBars, isMobile ? 20 : 40);
+  const groupWidth = numOfBars * (barWidth + spacingWithinGroup);
 
   const y = d3.scaleLinear()
     .domain([d3.min(data, d => d.changePersonnel) * 1.1, d3.max(data, d => Math.max(d.personnel, Math.abs(d.changePersonnel)))])
     .range([chartHeight, 0]);
 
-  // Add bars for total personnel with transition
-  chartGroup.selectAll('.personnel-bar')
+  // Create groups for each category and add bars within each group
+  const categoryGroups = chartGroup.selectAll('.category-group')
     .data(data)
     .enter()
-    .append('rect')
-    .attr('class', 'personnel-bar')
-    .attr('x', d => x(d.name) + internalMargin.left)
-    .attr('y', chartHeight + internalMargin.top) // Start from bottom
-    .attr('width', Math.min(x.bandwidth() / 2, isMobile ? 20 : 40))
-    .attr('height', 0) // Start with height 0
-    .attr('fill', '#36454F') // Charcoal
-    .attr('opacity', 0.7)
-    .transition()
-    .duration(750) // 750ms transition duration
-    .ease(d3.easeCubicOut) // Smooth easing function
-    .attr('y', d => y(Math.max(0, d.personnel)) + internalMargin.top)
-    .attr('height', d => Math.abs(y(d.personnel) - y(0)));
+    .append('g')
+    .attr('class', 'category-group')
+    .attr('transform', d => `translate(${x(d.name) + internalMargin.left}, 0)`);
 
-  // Add bars for change in personnel with transition
-  chartGroup.selectAll('.change-bar')
-    .data(data)
+  // Draw bars for each series within the category
+  categoryGroups.selectAll('.bar')
+    .data(d => [
+      { key: 'personnel', value: Math.max(0, d.personnel), color: '#36454F', opacity: 0.7 },
+      { key: 'change', value: d.changePersonnel, color: d.changePersonnel < 0 ? '#8b2513' : '#4e8a4e', opacity: 0.7 }
+    ])
     .enter()
     .append('rect')
-    .attr('class', 'change-bar')
-    .attr('x', d => x(d.name) + x.bandwidth() / 2 + internalMargin.left)
+    .attr('class', 'bar')
+    .attr('x', (d, i) => i * (barWidth + spacingWithinGroup))
     .attr('y', chartHeight + internalMargin.top) // Start from bottom
-    .attr('width', Math.min(x.bandwidth() / 2, isMobile ? 20 : 40))
+    .attr('width', barWidth)
     .attr('height', 0) // Start with height 0
-    .attr('fill', d => d.changePersonnel < 0 ? '#8b2513' : '#4e8a4e') // Dark grey-red for negative, pastel grey-green for positive
-    .attr('opacity', 0.7)
+    .attr('fill', d => d.color)
+    .attr('opacity', d => d.opacity)
     .transition()
     .duration(750) // 750ms transition duration
     .ease(d3.easeCubicOut) // Smooth easing function
-    .attr('y', d => (d.changePersonnel >= 0 ? y(d.changePersonnel) : y(0)) + internalMargin.top)
-    .attr('height', d => Math.abs(y(d.changePersonnel) - y(0)));
+    .attr('y', d => {
+      if (d.key === 'personnel') {
+        return y(Math.max(0, d.value)) + internalMargin.top;
+      } else {
+        return (d.value >= 0 ? y(d.value) : y(0)) + internalMargin.top;
+      }
+    })
+    .attr('height', d => {
+      if (d.key === 'personnel') {
+        return Math.abs(y(d.value) - y(0));
+      } else {
+        return Math.abs(y(d.value) - y(0));
+      }
+    });
 
   // Add axes
   chartGroup.append('g')

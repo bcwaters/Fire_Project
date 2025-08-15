@@ -21,53 +21,62 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     return num.toString();
   };
 
+  const numOfBars = showContainment && data[0] && data[0].containedPercent !== undefined ? 2 : 1;
+  const spacingWithinGroup = 2;
+
   // Scales
   const x = d3.scaleBand()
     .domain(data.map(d => d.name))
     .range([0, chartWidth])
-    .padding(0.05);
+    .padding(0.1);
+
+  const barWidth = Math.min((x.bandwidth() - (spacingWithinGroup * (numOfBars - 1))) / numOfBars, isMobile ? 20 : 40);
+  const groupWidth = numOfBars * (barWidth + spacingWithinGroup);
 
   const y = d3.scaleLinear()
     .domain([0, d3.max(data, d => d.totalAcres)])
     .range([chartHeight, 0]);
 
-  // Add bars for total acres with transition
-  chartGroup.selectAll('.acres-bar')
+  // Create groups for each category and add bars within each group
+  const categoryGroups = chartGroup.selectAll('.category-group')
     .data(data)
     .enter()
+    .append('g')
+    .attr('class', 'category-group')
+    .attr('transform', d => `translate(${x(d.name) + internalMargin.left}, 0)`);
+
+  // Draw bars for each series within the category
+  categoryGroups.selectAll('.bar')
+    .data(d => {
+      const bars = [
+        { key: 'acres', value: d.totalAcres, color: '#36454F', opacity: 0.7 }
+      ];
+      
+      if (showContainment && d.containedPercent !== undefined) {
+        bars.push({
+          key: 'containment', 
+          value: (d.containedPercent / 100) * d.totalAcres, 
+          color: '#4e8a4e', 
+          opacity: 1
+        });
+      }
+      
+      return bars;
+    })
+    .enter()
     .append('rect')
-    .attr('class', 'acres-bar')
-    .attr('x', d => x(d.name) + internalMargin.left)
+    .attr('class', 'bar')
+    .attr('x', (d, i) => i * (barWidth + spacingWithinGroup))
     .attr('y', chartHeight + internalMargin.top) // Start from bottom
-    .attr('width', Math.min(x.bandwidth() / 2, isMobile ? 20 : 40))
+    .attr('width', barWidth)
     .attr('height', 0) // Start with height 0
-    .attr('fill', '#36454F') // Charcoal
-    .attr('opacity', 0.7)
+    .attr('fill', d => d.color)
+    .attr('opacity', d => d.opacity)
     .transition()
     .duration(750) // 750ms transition duration
     .ease(d3.easeCubicOut) // Smooth easing function
-    .attr('y', d => y(d.totalAcres) + internalMargin.top)
-    .attr('height', d => chartHeight - y(d.totalAcres));
-
-  // Add bars for scaled containment (if enabled) with transition
-  if (showContainment && data[0].containedPercent !== undefined) {
-    chartGroup.selectAll('.containment-bar')
-      .data(data)
-      .enter()
-      .append('rect')
-      .attr('class', 'containment-bar')
-      .attr('x', d => x(d.name) + x.bandwidth() / 2 + internalMargin.left)
-      .attr('y', chartHeight + internalMargin.top) // Start from bottom
-      .attr('width', Math.min(x.bandwidth() / 2, isMobile ? 20 : 40))
-      .attr('height', 0) // Start with height 0
-      .attr('fill', '#4e8a4e') // Pastel grey-green
-      .attr('opacity', 1)
-      .transition()
-      .duration(750) // 750ms transition duration
-      .ease(d3.easeCubicOut) // Smooth easing function
-      .attr('y', d => y((d.containedPercent / 100) * d.totalAcres) + internalMargin.top)
-      .attr('height', d => chartHeight - y((d.containedPercent / 100) * d.totalAcres));
-  }
+    .attr('y', d => y(d.value) + internalMargin.top)
+    .attr('height', d => chartHeight - y(d.value));
 
   // Add axes
   chartGroup.append('g')

@@ -21,71 +21,51 @@ const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'R
     return num.toString();
   };
 
+  const numOfBars = 3;
+  const spacingWithinGroup = 2;
+
   // Scales
   const x = d3.scaleBand()
     .domain(data.map(d => d.name))
     .range([0, chartWidth])
-    .padding(0.05);
+    .padding(0.1);
+
+  const barWidth = Math.min((x.bandwidth() - (spacingWithinGroup * (numOfBars - 1))) / numOfBars, isMobile ? 15 : 40);
+  const groupWidth = numOfBars * (barWidth + spacingWithinGroup);
 
   const y = d3.scaleLinear()
     .domain([0, d3.max(data, d => Math.max(d.crews, d.engines, d.helicopters))])
     .range([chartHeight, 0]);
 
-  const barWidth = x.bandwidth() / 3;
-
-  // Add bars for crews with transition
-  chartGroup.selectAll('.crews-bar')
+  // Create groups for each category and add bars within each group
+  const categoryGroups = chartGroup.selectAll('.category-group')
     .data(data)
     .enter()
+    .append('g')
+    .attr('class', 'category-group')
+    .attr('transform', d => `translate(${x(d.name) + internalMargin.left}, 0)`);
+
+  // Draw bars for each series within the category
+  categoryGroups.selectAll('.bar')
+    .data(d => [
+      { key: 'crews', value: d.crews, color: '#696969', opacity: 0.7 },
+      { key: 'engines', value: d.engines, color: '#A9A9A9', opacity: 0.7 },
+      { key: 'helicopters', value: d.helicopters, color: '#D3D3D3', opacity: 0.7 }
+    ])
+    .enter()
     .append('rect')
-    .attr('class', 'crews-bar')
-    .attr('x', d => x(d.name) + internalMargin.left)
+    .attr('class', 'bar')
+    .attr('x', (d, i) => i * (barWidth + spacingWithinGroup))
     .attr('y', chartHeight + internalMargin.top) // Start from bottom
-    .attr('width', Math.min(barWidth, isMobile ? 15 : 40))
+    .attr('width', barWidth)
     .attr('height', 0) // Start with height 0
-    .attr('fill', '#696969') // Dark grey
-    .attr('opacity', 0.7)
+    .attr('fill', d => d.color)
+    .attr('opacity', d => d.opacity)
     .transition()
     .duration(750) // 750ms transition duration
     .ease(d3.easeCubicOut) // Smooth easing function
-    .attr('y', d => y(d.crews) + internalMargin.top)
-    .attr('height', d => chartHeight - y(d.crews));
-
-  // Add bars for engines with transition
-  chartGroup.selectAll('.engines-bar')
-    .data(data)
-    .enter()
-    .append('rect')
-    .attr('class', 'engines-bar')
-    .attr('x', d => x(d.name) + barWidth + internalMargin.left)
-    .attr('y', chartHeight + internalMargin.top) // Start from bottom
-    .attr('width', Math.min(barWidth, isMobile ? 15 : 40))
-    .attr('height', 0) // Start with height 0
-    .attr('fill', '#A9A9A9') // Medium grey
-    .attr('opacity', 0.7)
-    .transition()
-    .duration(750) // 750ms transition duration
-    .ease(d3.easeCubicOut) // Smooth easing function
-    .attr('y', d => y(d.engines) + internalMargin.top)
-    .attr('height', d => chartHeight - y(d.engines));
-
-  // Add bars for helicopters with transition
-  chartGroup.selectAll('.helicopters-bar')
-    .data(data)
-    .enter()
-    .append('rect')
-    .attr('class', 'helicopters-bar')
-    .attr('x', d => x(d.name) + 2 * barWidth + internalMargin.left)
-    .attr('y', chartHeight + internalMargin.top) // Start from bottom
-    .attr('width', Math.min(barWidth, isMobile ? 15 : 40))
-    .attr('height', 0) // Start with height 0
-    .attr('fill', '#D3D3D3') // Light grey
-    .attr('opacity', 0.7)
-    .transition()
-    .duration(750) // 750ms transition duration
-    .ease(d3.easeCubicOut) // Smooth easing function
-    .attr('y', d => y(d.helicopters) + internalMargin.top)
-    .attr('height', d => chartHeight - y(d.helicopters));
+    .attr('y', d => y(d.value) + internalMargin.top)
+    .attr('height', d => chartHeight - y(d.value));
 
   // Add axes
   chartGroup.append('g')
