@@ -54,31 +54,39 @@ function Dashboard() {
     }
   }, [params.region]);
 
+  const cleanSummaryString = (data) => {
+
+    let cleanSummary = data.summary.replace(/Understanding the IMSR\s*/g, '').replace(/IMSR Map\s*/g, '');
+    // Remove "Fire Activity and Teams Assigned Totals"
+    cleanSummary = cleanSummary.replace(/Fire Activity and Teams Assigned Totals\s*/g, '');
+    // Remove the Comp fires block
+    const compFiresRegex = /Fires not managed under a full suppression strategy[\s\S]*?can be found in the NWCG glossary  or here/;
+    cleanSummary = cleanSummary.replace(compFiresRegex, '').trim();
+    // Filter out lines with 3 or fewer characters
+    cleanSummary = cleanSummary
+      .split('\n')
+      // Trim leading spaces from each line
+      .map(line => line.trimStart())
+      .filter(line => line.trim().length > 3)
+      // Add a new line after 'NIMOs committed:'
+      .flatMap(line =>
+        line.includes('NIMOs committed:') ? [line, ''] : [line]
+      )
+      .join('\n');
+    setSummary(cleanSummary);
+    setSummaryLoading(false);
+  }
+
+  
+
   useEffect(() => {
     fetch(`/data/${today}/daily_summary.json`)
       .then(response => response.json())
       .then(data => {
         setHeader(data.header || []);
-        let cleanSummary = data.summary.replace(/Understanding the IMSR\s*/g, '').replace(/IMSR Map\s*/g, '');
-        // Remove "Fire Activity and Teams Assigned Totals"
-        cleanSummary = cleanSummary.replace(/Fire Activity and Teams Assigned Totals\s*/g, '');
-        // Remove the Comp fires block
-        const compFiresRegex = /Fires not managed under a full suppression strategy[\s\S]*?can be found in the NWCG glossary  or here/;
-        cleanSummary = cleanSummary.replace(compFiresRegex, '').trim();
-        // Filter out lines with 3 or fewer characters
-        cleanSummary = cleanSummary
-          .split('\n')
-          // Trim leading spaces from each line
-          .map(line => line.trimStart())
-          .filter(line => line.trim().length > 3)
-          // Add a new line after 'NIMOs committed:'
-          .flatMap(line =>
-            line.includes('NIMOs committed:') ? [line, ''] : [line]
-          )
-          .join('\n');
-        setSummary(cleanSummary);
-        setSummaryLoading(false);
-      })
+        cleanSummaryString(data); 
+      }
+        )
       .catch(error => {
         console.error('Error loading daily summary:', error);
         setSummary('Summary not available.');
