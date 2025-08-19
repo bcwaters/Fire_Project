@@ -234,12 +234,12 @@ def parse_region_summary(lines, data_dir, today):
     region_header_pattern = re.compile(r".*Area.*\(PL\s*\d+\s*\)")
     region_map = {}
     i = 0
-    print('\n'.join(lines))
+    # print('\n'.join(lines))
     while i < len(lines):
         line = lines[i]
         header_match = region_header_pattern.search(line)
         if header_match:
-            print(line)
+            # print(line)
             region_header = line.strip()
             data_lines = []
             i += 1

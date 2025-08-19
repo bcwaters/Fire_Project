@@ -110,8 +110,9 @@ function Dashboard() {
     <main>
       {/* Welcome Section */}
       <div className="welcome-section">
+      <h1>NIFC daily SIT report graphs</h1>
         <h2 className="predictive-summary-label">Incident Graphs are updated daily at 7:30am MDT.</h2>
-        <pre className="predictive-summary-text mobile-header-content">{header.join('\n')}</pre>
+        <div className="predictive-summary-text mobile-header-content">{header.join('\n')}</div>
         
         {/* Mobile expandable summary */}
         {isMobile ? (
@@ -126,12 +127,12 @@ function Dashboard() {
             )}
             {isSummaryExpanded && (
               <div className="predictive-summary-text expanded">
-                <pre className="predictive-summary-text mobile-header-content">{summary}</pre>
+                <div className="predictive-summary-text mobile-header-content">{summary}</div>
               </div>
             )}
           </div>
         ) : (
-          <pre className="predictive-summary-text">{summary}</pre>
+          <div className="predictive-summary-text">{summary}</div>
         )}
       </div>
       {/* Daily Summary Block */}
