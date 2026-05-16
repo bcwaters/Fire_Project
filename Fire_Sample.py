@@ -265,11 +265,16 @@ def detect_region(lines):
     Finds all lines that contain 'Fire Activity and Teams Assigned   Totals    '
     and outputs the line before each occurrence.
     """
-    target = 'Fire Activity and Teams Assigned   Totals'
+    target_pattern = re.compile(r'Fire Activity and Teams Assigned\s+Totals')
     found = []
     for i, line in enumerate(lines):
-        if target in line and i > 0:
-            found.append(lines[i-1])
+        if target_pattern.search(line) and i > 0:
+            # Walk back to the nearest non-empty line; PDF extraction includes spacer lines.
+            j = i - 1
+            while j >= 0 and not lines[j].strip():
+                j -= 1
+            if j >= 0:
+                found.append(lines[j].strip())
     return found
 
 def extract_header_and_summary(file_text, data_dir, today):
