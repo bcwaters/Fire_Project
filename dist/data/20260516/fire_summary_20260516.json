@@ -1,0 +1,112 @@
+[
+  {
+    "GACC": "AICC",
+    "Incidents": "0",
+    "Cumulative Acres": "0",
+    "Crews": "0",
+    "Engines": "0",
+    "Helicopters": "0",
+    "Total Personnel": "0",
+    "Change in Personnel": "0"
+  },
+  {
+    "GACC": "NWCC",
+    "Incidents": "3",
+    "Cumulative Acres": "5,762",
+    "Crews": "5",
+    "Engines": "6",
+    "Helicopters": "0",
+    "Total Personnel": "148",
+    "Change in Personnel": "0"
+  },
+  {
+    "GACC": "ONCC",
+    "Incidents": "0",
+    "Cumulative Acres": "0",
+    "Crews": "0",
+    "Engines": "0",
+    "Helicopters": "0",
+    "Total Personnel": "0",
+    "Change in Personnel": "0"
+  },
+  {
+    "GACC": "OSCC",
+    "Incidents": "3",
+    "Cumulative Acres": "5,139",
+    "Crews": "3",
+    "Engines": "3",
+    "Helicopters": "0",
+    "Total Personnel": "145",
+    "Change in Personnel": "33"
+  },
+  {
+    "GACC": "NRCC",
+    "Incidents": "1",
+    "Cumulative Acres": "250",
+    "Crews": "1",
+    "Engines": "6",
+    "Helicopters": "0",
+    "Total Personnel": "60",
+    "Change in Personnel": "-15"
+  },
+  {
+    "GACC": "GBCC",
+    "Incidents": "2",
+    "Cumulative Acres": "9,003",
+    "Crews": "10",
+    "Engines": "12",
+    "Helicopters": "1",
+    "Total Personnel": "277",
+    "Change in Personnel": "55"
+  },
+  {
+    "GACC": "SWCC",
+    "Incidents": "4",
+    "Cumulative Acres": "7,809",
+    "Crews": "7",
+    "Engines": "14",
+    "Helicopters": "5",
+    "Total Personnel": "434",
+    "Change in Personnel": "55"
+  },
+  {
+    "GACC": "RMCC",
+    "Incidents": "7",
+    "Cumulative Acres": "62,716",
+    "Crews": "5",
+    "Engines": "101",
+    "Helicopters": "4",
+    "Total Personnel": "438",
+    "Change in Personnel": "147"
+  },
+  {
+    "GACC": "EACC",
+    "Incidents": "1",
+    "Cumulative Acres": "190",
+    "Crews": "0",
+    "Engines": "0",
+    "Helicopters": "0",
+    "Total Personnel": "1",
+    "Change in Personnel": "-43"
+  },
+  {
+    "GACC": "SACC",
+    "Incidents": "34",
+    "Cumulative Acres": "121,945",
+    "Crews": "1",
+    "Engines": "94",
+    "Helicopters": "10",
+    "Total Personnel": "803",
+    "Change in Personnel": "82"
+  },
+  {
+    "GACC": "Total",
+    "Incidents": "55",
+    "Cumulative Acres": "212,814",
+    "Crews": "32",
+    "Engines": "236",
+    "Helicopters": "20",
+    "Total Personnel": "2,306",
+    "Change in Personnel": "314"
+  }
+]
