@@ -16,6 +16,8 @@ function Dashboard() {
   const [loading, setLoading] = useState(false); // regionNames now comes from props
   const [summaryRows, setSummaryRows] = useState([]);
   const [summaryLoading, setSummaryLoading] = useState(true);
+  const [totalAcres, setTotalAcres] = useState(null);
+  const [totalAcresLoading, setTotalAcresLoading] = useState(true);
   const [header, setHeader] = useState([]);
   const navigate = useNavigate();
   const [selectedRegion, setSelectedRegion] = useState(null);
@@ -26,17 +28,20 @@ function Dashboard() {
   // Dynamically generate regions array from regionNames keys
   const regions = Object.keys(regionNames).map(key => parseInt(key)).sort((a, b) => a - b);
   const sitReportHeaderRows = useMemo(() => {
-    const [reportTitle = '', issuedAt = '', preparednessLevel = ''] = header;
+    const [, issuedAt = '', preparednessLevel = ''] = header;
 
     return [
-      { label: 'Report', value: reportTitle.trim() || 'Unavailable' },
       { label: 'Issued', value: issuedAt.trim() || 'Unavailable' },
       { label: 'Preparedness Level', value: preparednessLevel.trim() || 'Unavailable' }
     ];
   }, [header]);
   const sitReportRows = useMemo(() => {
-    return [...sitReportHeaderRows, ...summaryRows];
-  }, [sitReportHeaderRows, summaryRows]);
+    const totalAcresRows = totalAcres === null
+      ? []
+      : [{ label: 'Total Acres', value: totalAcres.toLocaleString() }];
+
+    return [...sitReportHeaderRows, ...totalAcresRows, ...summaryRows];
+  }, [sitReportHeaderRows, summaryRows, totalAcres]);
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -149,9 +154,38 @@ function Dashboard() {
       });
   }, [today]);
 
+  useEffect(() => {
+    const nationalDataUrl = `/data/${today}/fire_summary_${today}.json`;
+    setTotalAcresLoading(true);
+
+    fetch(nationalDataUrl)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`National fire summary request failed with status ${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then(data => {
+        const acres = data.reduce((sum, row) => {
+          const value = parseFloat((row['Cumulative Acres'] || '0').replace(/,/g, '')) || 0;
+          return sum + value;
+        }, 0);
+
+        setTotalAcres(acres);
+      })
+      .catch(error => {
+        console.error('Error loading national total acres:', error);
+        setTotalAcres(null);
+      })
+      .finally(() => {
+        setTotalAcresLoading(false);
+      });
+  }, [today]);
+
   
 
-  if (loading || summaryLoading || regionNamesLoading) {
+  if (loading || summaryLoading || totalAcresLoading || regionNamesLoading) {
     return (
       <div className="app">
         <main>

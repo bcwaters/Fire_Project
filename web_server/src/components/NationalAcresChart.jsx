@@ -40,8 +40,8 @@ import AcresChart from './AcresChart';
       try {
         return {
           name: incident['GACC'] || 'Unknown',
-          totalAcres: parseFloat((incident['Cumulative Acres'] || '0').replace(/,/g, '')) || 0,
-      incidents: parseInt(incident['Incidents']) || 0,
+          totalAcres: parseInt(incident['Incidents']) || 0,
+          incidents: parseInt(incident['Incidents']) || 0,
           personnel: parseInt((incident['Total Personnel'] || '0').replace(/,/g, '')) || 0,
       changePersonnel: parseInt(incident['Change in Personnel']) || 0,
       crews: parseInt(incident['Crews']) || 0,
@@ -61,7 +61,7 @@ import AcresChart from './AcresChart';
           helicopters: 0
         };
       }
-    }).filter(item => item.name !== 'Unknown' && item.totalAcres > 0);
+    }).filter(item => item.name !== 'Unknown' && item.incidents > 0);
 
     // Responsive dimensions
     const containerElement = svgRef.current?.parentElement;
@@ -85,7 +85,7 @@ import AcresChart from './AcresChart';
       height: height, 
       xOffset: 0, 
       yOffset: 0,
-      title: 'National Fire Summary - Cumulative Acres by GACC',
+      title: 'National Fire Summary - Incidents by GACC',
       showContainment: false,
       isMobile: isMobile
     });
