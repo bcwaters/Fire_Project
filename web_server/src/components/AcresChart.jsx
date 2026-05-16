@@ -1,11 +1,13 @@
 import React from 'react';
+import * as d3 from 'd3';
+import { addHorizontalGrid, chartColors, chartFontFamily, formatTickLabel, styleAxes } from './chartStyle';
 
 const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total Acres and Containment', showContainment = true, isMobile = false }) => {
   const chartGroup = svg.append('g')
     .attr('transform', `translate(${xOffset}, ${yOffset})`);
 
   // Responsive font sizes
-  const titleFontSize = isMobile ? '10px' : '12px';
+  const titleFontSize = isMobile ? '11px' : '13px';
   const axisFontSize = isMobile ? '8px' : '10px';
   const legendFontSize = isMobile ? '8px' : '10px';
 
@@ -49,15 +51,15 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
   categoryGroups.selectAll('.bar')
     .data(d => {
       const bars = [
-        { key: 'acres', value: d.totalAcres, color: '#36454F', opacity: 0.7 }
+        { key: 'acres', value: d.totalAcres, color: chartColors.acres, opacity: 0.9 }
       ];
       
       if (showContainment && d.containedPercent !== undefined) {
         bars.push({
           key: 'containment', 
           value: (d.containedPercent / 100) * d.totalAcres, 
-          color: '#4e8a4e', 
-          opacity: 1
+          color: chartColors.containment,
+          opacity: 0.9
         });
       }
       
@@ -69,14 +71,16 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     .attr('x', (d, i) => i * (barWidth + spacingWithinGroup))
     .attr('y', chartHeight + internalMargin.top) // Start from bottom
     .attr('width', barWidth)
-    .attr('height', 0) // Start with height 0
+    .attr('height', 0)
     .attr('fill', d => d.color)
     .attr('opacity', d => d.opacity)
     .transition()
-    .duration(750) // 750ms transition duration
-    .ease(d3.easeCubicOut) // Smooth easing function
+    .duration(220)
+    .ease(d3.easeCubicOut)
     .attr('y', d => y(d.value) + internalMargin.top)
     .attr('height', d => chartHeight - y(d.value));
+
+  addHorizontalGrid(chartGroup, y, chartWidth, internalMargin);
 
   // Add axes
   chartGroup.append('g')
@@ -86,9 +90,10 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     .attr('transform', 'rotate(-45)') // Same rotation for mobile and desktop
     .style('text-anchor', 'end')
     .style('font-size', axisFontSize)
-    .style('fill', '#000') // Black color for x-axis labels
-    .attr('dy', isMobile ? '1.5em' : '0.71em') // Add padding for mobile
-    .text(d => d); // Show only the incident name, no numeric values
+    .style('fill', chartColors.axis)
+    .style('font-family', chartFontFamily)
+    .attr('dy', isMobile ? '1.5em' : '0.71em')
+    .text(d => formatTickLabel(d, isMobile));
 
   chartGroup.append('g')
     .attr('class', 'y-axis')
@@ -96,12 +101,10 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     .call(d3.axisLeft(y).tickFormat(convertNumber))
     .selectAll('text')
     .style('font-size', axisFontSize)
-    .style('fill', '#000'); // Black color for y-axis labels
+    .style('fill', chartColors.axis)
+    .style('font-family', chartFontFamily);
 
-  // Make y-axis lines much thinner
-  chartGroup.selectAll('.y-axis .domain, .y-axis .tick line')
-    .style('stroke-width', '0.1px')
-    .attr('stroke-width', '0.1px');
+  styleAxes(chartGroup);
 
   // Add labels
   chartGroup.append('text')
@@ -109,6 +112,9 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     .attr('y', internalMargin.top - 10)
     .attr('text-anchor', 'middle')
     .style('font-size', titleFontSize)
+    .style('font-family', chartFontFamily)
+    .style('font-weight', 700)
+    .style('fill', chartColors.title)
     .text(title);
 
   // Add legend
@@ -119,47 +125,37 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
   const legendItemHeight =  20;
   const legendItemSpacing =  8;
   const legendTextWidth =  100;
-  const legendBoxWidth = isMobile ? 87 : 92; // Reduced by 10 pixels total for mobile
-  const legendBoxHeight = (showContainment && data[0].containedPercent !== undefined) ? 
-    (isMobile ? (2 * legendItemHeight + legendItemSpacing - 8) : (2 * legendItemHeight + legendItemSpacing)) : 
-    (isMobile ? (legendItemHeight + 2) : (legendItemHeight + 10)); // Reduced by 8 pixels for mobile
-  
-  // Add legend background box with border
   legend.append('rect')
-    .attr('width', legendBoxWidth)
-    .attr('height', legendBoxHeight)
-    .attr('fill', 'white')
-    .attr('stroke', '#ccc')
-    .attr('stroke-width', 1)
-    .attr('rx', 3); // Rounded corners
-
-  legend.append('rect')
-    .attr('x', 5)
+    .attr('x', 0)
     .attr('y', 5)
     .attr('width', isMobile ? 10 : 15)
     .attr('height', isMobile ? 10 : 15)
-    .attr('fill', '#36454F') // Charcoal
+    .attr('fill', chartColors.acres)
     .attr('opacity', 1);
 
   legend.append('text')
-    .attr('x', isMobile ? 20 : 25)
+    .attr('x', isMobile ? 15 : 20)
     .attr('y', isMobile ? 13 : 18)
     .style('font-size', legendFontSize)
+    .style('font-family', chartFontFamily)
+    .style('fill', chartColors.text)
     .text('Acres');
 
   if (showContainment && data[0].containedPercent !== undefined) {
     legend.append('rect')
-      .attr('x', 5)
+      .attr('x', 0)
       .attr('y', isMobile ? 20 : 25)
       .attr('width', isMobile ? 10 : 15)
       .attr('height', isMobile ? 10 : 15)
-      .attr('fill', '#4e8a4e') // Pastel grey-green
+      .attr('fill', chartColors.containment)
       .attr('opacity', 1);
 
     legend.append('text')
-      .attr('x', isMobile ? 20 : 25)
+      .attr('x', isMobile ? 15 : 20)
       .attr('y', isMobile ? 28 : 38)
       .style('font-size', legendFontSize)
+      .style('font-family', chartFontFamily)
+      .style('fill', chartColors.text)
       .text('Containment');
   }
 

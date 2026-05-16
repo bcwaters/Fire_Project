@@ -58,7 +58,7 @@ function Layout() {
           </div>
           {/* Desktop dropdown */}
           <select onChange={handleRegionChange} value={selectedRegion} className="region-dropdown hide-on-mobile">
-            <option value="" disabled>Region</option>
+            <option value="" disabled>Select Your Region</option>
             {regions.map(region => (
               <option key={region} value={region} className="region-dropdown-option">
                 {regionNames[region] || `Region ${region}`}
@@ -67,7 +67,7 @@ function Layout() {
           </select>
           {/* Mobile dropdown */}
           <select onChange={handleRegionChange} value={selectedRegion} className="region-dropdown hide-on-desktop">
-            <option value="" disabled>Region</option>
+            <option value="" disabled>Select Your Region</option>
             {regions.map(region => (
               <option key={region} value={region} className="region-dropdown-option">
                 {regionNames[region] || `Region ${region}`}

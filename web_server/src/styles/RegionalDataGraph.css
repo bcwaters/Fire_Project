@@ -34,6 +34,11 @@
   grid-template-columns: 1fr 1fr;
 }
 
+.regional-data-graph .chart-grid.desktop.regional-detail-layout {
+  grid-template-columns: minmax(320px, 0.95fr) minmax(420px, 1.05fr);
+  align-items: start;
+}
+
 .regional-data-graph .chart-item {
   box-shadow: 0 4px 8px #a37d1d0c;
   border-radius: 0px;
@@ -59,7 +64,7 @@
   font-weight: 500;
   font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
   background: #FB8C00;
-  border-radius: 3px;
+  border-radius: 0;
   border: none;
   color: #3f3f3f;
   margin-top: 3px;

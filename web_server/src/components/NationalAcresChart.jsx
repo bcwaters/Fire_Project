@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import * as d3 from 'd3';
 import AcresChart from './AcresChart';
 
   const NationalAcresChart = ({ isMobile = false, today }) => {
@@ -72,6 +73,8 @@ import AcresChart from './AcresChart';
     const svg = d3.select(svgRef.current)
       .attr('width', width)
       .attr('height', height)
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
       .append('g');
 
     // Create acres chart

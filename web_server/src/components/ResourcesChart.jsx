@@ -1,11 +1,13 @@
 import React from 'react';
+import * as d3 from 'd3';
+import { addHorizontalGrid, chartColors, chartFontFamily, formatTickLabel, styleAxes } from './chartStyle';
 
 const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Resources', isMobile = false }) => {
   const chartGroup = svg.append('g')
     .attr('transform', `translate(${xOffset}, ${yOffset})`);
 
   // Responsive font sizes
-  const titleFontSize = isMobile ? '10px' : '12px';
+  const titleFontSize = isMobile ? '11px' : '13px';
   const axisFontSize = isMobile ? '8px' : '10px';
   const legendFontSize = isMobile ? '8px' : '10px';
 
@@ -48,9 +50,9 @@ const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'R
   // Draw bars for each series within the category
   categoryGroups.selectAll('.bar')
     .data(d => [
-      { key: 'crews', value: d.crews, color: '#696969', opacity: 0.7 },
-      { key: 'engines', value: d.engines, color: '#A9A9A9', opacity: 0.7 },
-      { key: 'helicopters', value: d.helicopters, color: '#D3D3D3', opacity: 0.7 }
+      { key: 'crews', value: d.crews, color: chartColors.crews, opacity: 0.9 },
+      { key: 'engines', value: d.engines, color: chartColors.engines, opacity: 0.9 },
+      { key: 'helicopters', value: d.helicopters, color: chartColors.helicopters, opacity: 0.9 }
     ])
     .enter()
     .append('rect')
@@ -62,10 +64,12 @@ const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'R
     .attr('fill', d => d.color)
     .attr('opacity', d => d.opacity)
     .transition()
-    .duration(750) // 750ms transition duration
-    .ease(d3.easeCubicOut) // Smooth easing function
+    .duration(220)
+    .ease(d3.easeCubicOut)
     .attr('y', d => y(d.value) + internalMargin.top)
     .attr('height', d => chartHeight - y(d.value));
+
+  addHorizontalGrid(chartGroup, y, chartWidth, internalMargin);
 
   // Add axes
   chartGroup.append('g')
@@ -75,9 +79,10 @@ const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'R
     .attr('transform', 'rotate(-45)') // Same rotation for mobile and desktop
     .style('text-anchor', 'end')
     .style('font-size', axisFontSize)
-    .style('fill', '#000') // Black color for x-axis labels
-    .attr('dy', isMobile ? '1.5em' : '0.71em') // Add padding for mobile
-    .text(d => d); // Show only the incident/GACC name, no numeric values
+    .style('fill', chartColors.axis)
+    .style('font-family', chartFontFamily)
+    .attr('dy', isMobile ? '1.5em' : '0.71em')
+    .text(d => formatTickLabel(d, isMobile));
 
   chartGroup.append('g')
     .attr('class', 'y-axis')
@@ -85,12 +90,10 @@ const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'R
     .call(d3.axisLeft(y).tickFormat(convertNumber))
     .selectAll('text')
     .style('font-size', axisFontSize)
-    .style('fill', '#000'); // Black color for y-axis labels
+    .style('fill', chartColors.axis)
+    .style('font-family', chartFontFamily);
 
-  // Make y-axis lines much thinner
-  chartGroup.selectAll('.y-axis .domain, .y-axis .tick line')
-    .style('stroke-width', '0.1px')
-    .attr('stroke-width', '0.1px');
+  styleAxes(chartGroup);
 
   // Add labels
   chartGroup.append('text')
@@ -98,6 +101,9 @@ const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'R
     .attr('y', internalMargin.top - 10)
     .attr('text-anchor', 'middle')
     .style('font-size', titleFontSize)
+    .style('font-family', chartFontFamily)
+    .style('font-weight', 700)
+    .style('fill', chartColors.title)
     .text(title);
 
   // Add legend
@@ -107,58 +113,52 @@ const ResourcesChart = ({ svg, data, width, height, xOffset, yOffset, title = 'R
   // Calculate legend dimensions based on content (3 items)
   const legendItemHeight =  20;
   const legendItemSpacing = 8;
-  const legendBoxWidth = isMobile ? 82 : 92; // Reduced by 10 pixels total for mobile
-  const legendBoxHeight = isMobile ? (3 * legendItemHeight + 2 * legendItemSpacing - 8) : (3 * legendItemHeight + 2 * legendItemSpacing); // Reduced by 8 pixels for mobile
-  
-  // Add legend background box with border
   legend.append('rect')
-    .attr('width', legendBoxWidth)
-    .attr('height', legendBoxHeight)
-    .attr('fill', 'white')
-    .attr('stroke', '#ccc')
-    .attr('stroke-width', 1)
-    .attr('rx', 3); // Rounded corners
-
-  legend.append('rect')
-    .attr('x', 5)
+    .attr('x', 0)
     .attr('y', 5)
     .attr('width', isMobile ? 10 : 15)
     .attr('height', isMobile ? 10 : 15)
-    .attr('fill', '#696969') // Dark grey
-    .attr('opacity', 0.7);
+    .attr('fill', chartColors.crews)
+    .attr('opacity', 1);
 
   legend.append('text')
-    .attr('x', isMobile ? 20 : 25)
+    .attr('x', isMobile ? 15 : 20)
     .attr('y', isMobile ? 13 : 18)
     .style('font-size', legendFontSize)
+    .style('font-family', chartFontFamily)
+    .style('fill', chartColors.text)
     .text('Crews');
 
   legend.append('rect')
-    .attr('x', 5)
+    .attr('x', 0)
     .attr('y', isMobile ? 20 : 25)
     .attr('width', isMobile ? 10 : 15)
     .attr('height', isMobile ? 10 : 15)
-    .attr('fill', '#A9A9A9') // Medium grey
-    .attr('opacity', 0.7);
+    .attr('fill', chartColors.engines)
+    .attr('opacity', 1);
 
   legend.append('text')
-    .attr('x', isMobile ? 20 : 25)
+    .attr('x', isMobile ? 15 : 20)
     .attr('y', isMobile ? 28 : 38)
     .style('font-size', legendFontSize)
+    .style('font-family', chartFontFamily)
+    .style('fill', chartColors.text)
     .text('Engines');
 
   legend.append('rect')
-    .attr('x', 5)
+    .attr('x', 0)
     .attr('y', isMobile ? 35 : 45)
     .attr('width', isMobile ? 10 : 15)
     .attr('height', isMobile ? 10 : 15)
-    .attr('fill', '#D3D3D3') // Light grey
-    .attr('opacity', 0.7);
+    .attr('fill', chartColors.helicopters)
+    .attr('opacity', 1);
 
   legend.append('text')
-    .attr('x', isMobile ? 20 : 25)
+    .attr('x', isMobile ? 15 : 20)
     .attr('y', isMobile ? 43 : 58)
     .style('font-size', legendFontSize)
+    .style('font-family', chartFontFamily)
+    .style('fill', chartColors.text)
     .text('Helicopters');
 
   return null; // This component doesn't render JSX, it manipulates D3

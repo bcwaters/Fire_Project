@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import './styles/App.css';
 import RegionalDataGraph from './components/RegionalDataGraph.jsx';
 import { useRegionNames } from './RegionContext.jsx';
@@ -16,42 +16,111 @@ function getTodayMDTPretty() {
 
 function RegionDetail({ today } ) {
   const { regionId } = useParams();
-  const navigate = useNavigate();
   // Use the same date as the RegionProvider
 
   const todayPrettyMDT = getTodayMDTPretty();
   const [regionData, setRegionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [regionSummary, setRegionSummary] = useState(null);
+  const [regionSummary, setRegionSummary] = useState({ metrics: [], incidents: [] });
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [summaryError, setSummaryError] = useState(null);
-  const [downloadGraph, setDownloadGraph] = useState();
-  const { regionNames, loading: regionNamesLoading } = useRegionNames();
-
-  const memoizedSetDownloadGraph = useCallback((func) => {
-    setDownloadGraph(() => func);
-  }, []);
+  const { regionNames, regionFileIds, loading: regionNamesLoading } = useRegionNames();
 
   // Get region name from context - use useMemo to prevent unnecessary recalculations
   const regionName = React.useMemo(() => {
     return regionNames[regionId] || `Region ${regionId}`;
   }, [regionNames, regionId]);
+  const regionFileId = regionFileIds[regionId] || regionId;
+
+  const parseRegionSummary = (summaryLines) => {
+    const metrics = [];
+    const incidents = [];
+    let currentIncident = [];
+    let inIncidentDetails = false;
+
+    summaryLines.forEach((rawLine) => {
+      const line = rawLine.replace(/\s+/g, ' ').trim();
+
+      if (!line) {
+        if (currentIncident.length > 0) {
+          incidents.push(currentIncident.join(' '));
+          currentIncident = [];
+        }
+        return;
+      }
+
+      if (line === 'Fire Activity and Teams Assigned Totals') {
+        return;
+      }
+
+      const [label, ...valueParts] = line.split(':');
+      const value = valueParts.join(':').trim();
+
+      if (!inIncidentDetails && value) {
+        metrics.push({
+          label: label.trim(),
+          value
+        });
+        return;
+      }
+
+      inIncidentDetails = true;
+      currentIncident.push(line);
+    });
+
+    if (currentIncident.length > 0) {
+      incidents.push(currentIncident.join(' '));
+    }
+
+    return { metrics, incidents };
+  };
+
+  const renderRegionSummary = () => (
+    <div className="region-summary-panel-content">
+      {summaryLoading && <p className="predictive-summary-loading">Loading region summary...</p>}
+      {summaryError && <p className="predictive-summary-error">{summaryError}</p>}
+      {!summaryLoading && !summaryError && (
+        <>
+          {regionSummary.incidents.length > 0 && (
+            <div className="region-incident-list" aria-label={`${regionName} incident summaries`}>
+              {regionSummary.incidents.map((incident, index) => (
+                <p key={index}>{incident}</p>
+              ))}
+            </div>
+          )}
+          {!regionSummary.incidents.length && (
+            <p className="predictive-summary-error">No summary available for this region.</p>
+          )}
+        </>
+      )}
+    </div>
+  );
 
   useEffect(() => {
+    let isCurrent = true;
+
     async function fetchData() {
       setLoading(true);
       setError(null);
+      setRegionData(null);
+
       try {
         // Load region data
-        const dataResp = await fetch(`/data/${today}/regions/Region_${regionId}_${today}.json`);
+        const dataResp = await fetch(`/data/${today}/regions/Region_${regionFileId}_${today}.json`);
         if (!dataResp.ok) throw new Error('Region data not found');
         const dataJson = await dataResp.json();
-        setRegionData(dataJson);
+        if (isCurrent) {
+          setRegionData(dataJson);
+        }
       } catch (err) {
-        setError(err.message);
+        if (isCurrent) {
+          setError(err.message);
+        }
       } finally {
-        setLoading(false);
+        if (isCurrent) {
+          setLoading(false);
+        }
       }
     }
     
@@ -59,12 +128,20 @@ function RegionDetail({ today } ) {
     if (!regionNamesLoading) {
       fetchData();
     }
-  }, [regionId, today, regionNamesLoading]);
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [regionId, regionFileId, today, regionNamesLoading]);
 
   useEffect(() => {
+    let isCurrent = true;
+
     async function fetchRegionSummary() {
       setSummaryLoading(true);
       setSummaryError(null);
+      setRegionSummary({ metrics: [], incidents: [] });
+
       try {
         const resp = await fetch(`/data/${today}/regions/region_summaries_${today}.json`);
         if (!resp.ok) throw new Error('Region summary not found');
@@ -80,14 +157,18 @@ function RegionDetail({ today } ) {
           regionKey = foundKey || regionKey;
         }
 
-        //replace each line with is an empty string with a new line
         const summaryLines = summaryJson[regionKey] || [];
-        const summaryLinesWithNewLines = summaryLines.map(line => line.replace(/^\s*$/, '\n\n'));
-        setRegionSummary(summaryLinesWithNewLines);
+        if (isCurrent) {
+          setRegionSummary(parseRegionSummary(summaryLines));
+        }
       } catch (err) {
-        setSummaryError('Could not load region summary.');
+        if (isCurrent) {
+          setSummaryError('Could not load region summary.');
+        }
       } finally {
-        setSummaryLoading(false);
+        if (isCurrent) {
+          setSummaryLoading(false);
+        }
       }
     }
     
@@ -95,6 +176,10 @@ function RegionDetail({ today } ) {
     if (!regionNamesLoading && regionNames[regionId]) {
       fetchRegionSummary();
     }
+
+    return () => {
+      isCurrent = false;
+    };
   }, [regionNames, regionId, today, regionNamesLoading]);
 
   // Show loading state while region names are being fetched
@@ -110,44 +195,24 @@ function RegionDetail({ today } ) {
 
   return (
     <div>
-      <div className="page-header-container">
-        <button className="back-button" onClick={() => navigate('/')}>←</button>
-        <button onClick={downloadGraph} className="save-btn save-svg">
-          Download Graph
-        </button>
-      </div>
       <div className="region-detail">
-        <div className="region-detail-header">
-          <h1 className="region-detail-title"> {regionName} <span style={{fontSize: '.5rem', fontWeight: 400, color: '#b28704'}}> {todayPrettyMDT} MDT</span></h1>
-        </div>
-        
         {/* D3.js Chart */}
         <div className="chart-container">
           {loading ? (
             <div className="loading-chart">Loading chart...</div>
           ) : (
             <RegionalDataGraph 
-              regionId={regionId} 
+              key={`${today}-${regionId}-${regionFileId}`}
+              regionId={regionFileId} 
               data={regionData} 
               headerData={{ header: ['', todayPrettyMDT] }}
-              setDownloadGraph={memoizedSetDownloadGraph}
+              topLeftContent={renderRegionSummary()}
             />
           )}
         </div>
 
         {loading && <p>Loading region data...</p>}
         {error && <p className="error-message">{error}</p>}
-        <div className="predictive-summary-container">
-          <h2 className="predictive-summary-label">Region Summary:</h2>
-          {summaryLoading && <p className="predictive-summary-loading">Loading region summary...</p>}
-          {summaryError && <p className="predictive-summary-error">{summaryError}</p>}
-          {!summaryLoading && !summaryError && regionSummary && (
-            <pre className="predictive-summary-text">{regionSummary.join('')}</pre>
-          )}
-          {!summaryLoading && !summaryError && !regionSummary && (
-            <p className="predictive-summary-error">No summary available for this region.</p>
-          )}
-        </div>
       </div>
     </div>
   );

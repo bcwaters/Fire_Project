@@ -1,187 +1,166 @@
 import React from 'react';
+import * as d3 from 'd3';
+import { addHorizontalGrid, chartColors, chartFontFamily, formatTickLabel, styleAxes } from './chartStyle';
 
 const PersonnelChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Personnel', isMobile = false }) => {
   const chartGroup = svg.append('g')
     .attr('transform', `translate(${xOffset}, ${yOffset})`);
 
-  // Responsive font sizes
-  const titleFontSize = isMobile ? '10px' : '12px';
+  const titleFontSize = isMobile ? '11px' : '13px';
   const axisFontSize = isMobile ? '8px' : '10px';
-  const legendFontSize = isMobile ? '8px' : '10px';
-
-  // Internal margins for chart readability
-  const internalMargin = { top: 30, right: 20, bottom: 30, left: 60 };
+  const labelFontSize = isMobile ? '8px' : '10px';
+  const internalMargin = { top: 46, right: 20, bottom: 34, left: 58 };
   const chartWidth = width - internalMargin.left - internalMargin.right;
   const chartHeight = height - internalMargin.top - internalMargin.bottom;
+  const panelGap = isMobile ? 18 : 28;
+  const totalPanelWidth = Math.max(120, chartWidth * 0.58);
+  const changePanelWidth = Math.max(90, chartWidth - totalPanelWidth - panelGap);
 
   const convertNumber = (num) => {
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'k';
+    if (Math.abs(num) >= 1000) {
+      return `${(num / 1000).toFixed(1)}k`;
     }
     return num.toString();
   };
 
-  const numOfBars = 2;
-  const spacingWithinGroup = 2;
-
-  // Scales
-  const x = d3.scaleBand()
+  const xTotal = d3.scaleBand()
     .domain(data.map(d => d.name))
-    .range([0, chartWidth])
-    .padding(0.1);
+    .range([0, totalPanelWidth])
+    .padding(0.18);
 
-  const barWidth = Math.min((x.bandwidth() - spacingWithinGroup) / numOfBars, isMobile ? 20 : 40);
-  const groupWidth = numOfBars * (barWidth + spacingWithinGroup);
+  const xChange = d3.scaleBand()
+    .domain(data.map(d => d.name))
+    .range([0, changePanelWidth])
+    .padding(0.26);
 
-  const y = d3.scaleLinear()
-    .domain([d3.min(data, d => d.changePersonnel) * 1.1, d3.max(data, d => Math.max(d.personnel, Math.abs(d.changePersonnel)))])
+  const yTotal = d3.scaleLinear()
+    .domain([0, d3.max(data, d => d.personnel) || 1])
+    .nice()
     .range([chartHeight, 0]);
 
-  // Create groups for each category and add bars within each group
-  const categoryGroups = chartGroup.selectAll('.category-group')
+  const maxChange = d3.max(data, d => Math.abs(d.changePersonnel)) || 1;
+  const yChange = d3.scaleLinear()
+    .domain([-maxChange, maxChange])
+    .nice()
+    .range([chartHeight, 0]);
+
+  const totalGroup = chartGroup.append('g')
+    .attr('transform', `translate(${internalMargin.left},${internalMargin.top})`);
+
+  const changeGroup = chartGroup.append('g')
+    .attr('transform', `translate(${internalMargin.left + totalPanelWidth + panelGap},${internalMargin.top})`);
+
+  addHorizontalGrid(totalGroup, yTotal, totalPanelWidth, { top: 0, left: 0 }, 4);
+
+  totalGroup.selectAll('.personnel-total-bar')
     .data(data)
     .enter()
-    .append('g')
-    .attr('class', 'category-group')
-    .attr('transform', d => `translate(${x(d.name) + internalMargin.left}, 0)`);
-
-  // Draw bars for each series within the category
-  categoryGroups.selectAll('.bar')
-    .data(d => [
-      { key: 'personnel', value: Math.max(0, d.personnel), color: '#36454F', opacity: 0.7 },
-      { key: 'change', value: d.changePersonnel, color: d.changePersonnel < 0 ? '#8b2513' : '#4e8a4e', opacity: 0.7 }
-    ])
-    .enter()
     .append('rect')
-    .attr('class', 'bar')
-    .attr('x', (d, i) => i * (barWidth + spacingWithinGroup))
-    .attr('y', chartHeight + internalMargin.top) // Start from bottom
-    .attr('width', barWidth)
-    .attr('height', 0) // Start with height 0
-    .attr('fill', d => d.color)
-    .attr('opacity', d => d.opacity)
+    .attr('class', 'personnel-total-bar')
+    .attr('x', d => xTotal(d.name))
+    .attr('y', chartHeight)
+    .attr('width', Math.min(xTotal.bandwidth(), isMobile ? 20 : 34))
+    .attr('height', 0)
+    .attr('fill', chartColors.total)
+    .attr('opacity', 0.9)
     .transition()
-    .duration(750) // 750ms transition duration
-    .ease(d3.easeCubicOut) // Smooth easing function
-    .attr('y', d => {
-      if (d.key === 'personnel') {
-        return y(Math.max(0, d.value)) + internalMargin.top;
-      } else {
-        return (d.value >= 0 ? y(d.value) : y(0)) + internalMargin.top;
-      }
-    })
-    .attr('height', d => {
-      if (d.key === 'personnel') {
-        return Math.abs(y(d.value) - y(0));
-      } else {
-        return Math.abs(y(d.value) - y(0));
-      }
-    });
+    .duration(220)
+    .ease(d3.easeCubicOut)
+    .attr('y', d => yTotal(d.personnel))
+    .attr('height', d => chartHeight - yTotal(d.personnel));
 
-  // Add axes
-  chartGroup.append('g')
-    .attr('transform', `translate(${internalMargin.left},${chartHeight + internalMargin.top})`)
-    .call(d3.axisBottom(x).tickSize(0)) // Remove tick lines
-    .selectAll('text')
-    .attr('transform', 'rotate(-45)') // Same rotation for mobile and desktop
-    .style('text-anchor', 'end')
-    .style('font-size', axisFontSize)
-    .style('fill', '#000') // Black color for x-axis labels
-    .attr('dy', isMobile ? '1.5em' : '0.71em') // Add padding for mobile
-    .text(d => d); // Show only the incident/GACC name, no numeric values
-
-  chartGroup.append('g')
-    .attr('class', 'y-axis')
-    .attr('transform', `translate(${internalMargin.left},${internalMargin.top})`)
-    .call(d3.axisLeft(y).tickFormat(convertNumber))
-    .selectAll('text')
-    .style('font-size', axisFontSize)
-    .style('fill', '#000'); // Black color for y-axis labels
-
-  // Make y-axis lines much thinner
-  chartGroup.selectAll('.y-axis .domain, .y-axis .tick line')
-    .style('stroke-width', '0.1px')
-    .attr('stroke-width', '0.1px');
-
-  // Add zero line for clarity
-  chartGroup.append('line')
-    .attr('x1', internalMargin.left)
-    .attr('x2', chartWidth + internalMargin.left)
-    .attr('y1', y(0) + internalMargin.top)
-    .attr('y2', y(0) + internalMargin.top)
-    .attr('stroke', 'black')
+  changeGroup.append('line')
+    .attr('x1', 0)
+    .attr('x2', changePanelWidth)
+    .attr('y1', yChange(0))
+    .attr('y2', yChange(0))
+    .attr('stroke', chartColors.axis)
     .attr('stroke-width', 1);
 
-  // Add labels
+  changeGroup.selectAll('.personnel-change-bar')
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr('class', 'personnel-change-bar')
+    .attr('x', d => xChange(d.name))
+    .attr('y', yChange(0))
+    .attr('width', Math.min(xChange.bandwidth(), isMobile ? 16 : 26))
+    .attr('height', 0)
+    .attr('fill', d => d.changePersonnel < 0 ? chartColors.negative : chartColors.positive)
+    .attr('opacity', 0.95)
+    .transition()
+    .duration(220)
+    .ease(d3.easeCubicOut)
+    .attr('y', d => d.changePersonnel >= 0 ? yChange(d.changePersonnel) : yChange(0))
+    .attr('height', d => Math.abs(yChange(d.changePersonnel) - yChange(0)));
+
+  totalGroup.append('g')
+    .attr('transform', `translate(0,${chartHeight})`)
+    .call(d3.axisBottom(xTotal).tickSize(0))
+    .selectAll('text')
+    .attr('transform', 'rotate(-45)')
+    .style('text-anchor', 'end')
+    .style('font-size', axisFontSize)
+    .style('fill', chartColors.axis)
+    .style('font-family', chartFontFamily)
+    .attr('dy', isMobile ? '1.5em' : '0.71em')
+    .text(d => formatTickLabel(d, isMobile));
+
+  changeGroup.append('g')
+    .attr('transform', `translate(0,${chartHeight})`)
+    .call(d3.axisBottom(xChange).tickSize(0).tickFormat(''))
+    .selectAll('text')
+    .remove();
+
+  totalGroup.append('g')
+    .attr('class', 'y-axis')
+    .call(d3.axisLeft(yTotal).ticks(4).tickFormat(convertNumber))
+    .selectAll('text')
+    .style('font-size', axisFontSize)
+    .style('fill', chartColors.axis)
+    .style('font-family', chartFontFamily);
+
+  changeGroup.append('g')
+    .attr('class', 'y-axis')
+    .call(d3.axisLeft(yChange).ticks(5).tickFormat(convertNumber))
+    .selectAll('text')
+    .style('font-size', axisFontSize)
+    .style('fill', chartColors.axis)
+    .style('font-family', chartFontFamily);
+
+  styleAxes(chartGroup);
+
   chartGroup.append('text')
     .attr('x', width / 2)
-    .attr('y', internalMargin.top - 10)
+    .attr('y', 20)
     .attr('text-anchor', 'middle')
     .style('font-size', titleFontSize)
+    .style('font-family', chartFontFamily)
+    .style('font-weight', 700)
+    .style('fill', chartColors.title)
     .text(title);
 
-  // Add legend
-  const legend = chartGroup.append('g')
-    .attr('transform', `translate(${internalMargin.left + 10}, ${internalMargin.top + 20})`);
+  totalGroup.append('text')
+    .attr('x', totalPanelWidth / 2)
+    .attr('y', -12)
+    .attr('text-anchor', 'middle')
+    .style('font-size', labelFontSize)
+    .style('font-family', chartFontFamily)
+    .style('font-weight', 700)
+    .style('fill', chartColors.axis)
+    .text('Total personnel');
 
-  // Calculate legend dimensions based on content (3 items)
-  const legendItemHeight =  20;
-  const legendItemSpacing =  8;
-  const legendBoxWidth = isMobile ? 82 : 92; // Reduced by 10 pixels total for mobile
-  const legendBoxHeight = isMobile ? (3 * legendItemHeight + 2 * legendItemSpacing - 8) : (3 * legendItemHeight + 2 * legendItemSpacing); // Reduced by 8 pixels for mobile
-  
-  // Add legend background box with border
-  legend.append('rect')
-    .attr('width', legendBoxWidth)
-    .attr('height', legendBoxHeight)
-    .attr('fill', 'white')
-    .attr('stroke', '#ccc')
-    .attr('stroke-width', 1)
-    .attr('rx', 3); // Rounded corners
+  changeGroup.append('text')
+    .attr('x', changePanelWidth / 2)
+    .attr('y', -12)
+    .attr('text-anchor', 'middle')
+    .style('font-size', labelFontSize)
+    .style('font-family', chartFontFamily)
+    .style('font-weight', 700)
+    .style('fill', chartColors.axis)
+    .text('Change');
 
-  legend.append('rect')
-    .attr('x', 5)
-    .attr('y', 5)
-    .attr('width', isMobile ? 10 : 15)
-    .attr('height', isMobile ? 10 : 15)
-    .attr('fill', '#36454F') // Charcoal
-    .attr('opacity', 1);
-
-  legend.append('text')
-    .attr('x', isMobile ? 20 : 25)
-    .attr('y', isMobile ? 13 : 18)
-    .style('font-size', legendFontSize)
-    .text('Total');
-
-  legend.append('rect')
-    .attr('x', 5)
-    .attr('y', isMobile ? 20 : 25)
-    .attr('width', isMobile ? 10 : 15)
-    .attr('height', isMobile ? 10 : 15)
-    .attr('fill', '#4e8a4e') // Pastel grey-green
-    .attr('opacity', 1);
-
-  legend.append('text')
-    .attr('x', isMobile ? 20 : 25)
-    .attr('y', isMobile ? 28 : 38)
-    .style('font-size', legendFontSize)
-    .text('Change +');
-
-  legend.append('rect')
-    .attr('x', 5)
-    .attr('y', isMobile ? 35 : 45)
-    .attr('width', isMobile ? 10 : 15)
-    .attr('height', isMobile ? 10 : 15)
-    .attr('fill', '#8b2513') // Dark grey-red
-    .attr('opacity', 1);
-
-  legend.append('text')
-    .attr('x', isMobile ? 20 : 25)
-    .attr('y', isMobile ? 43 : 58)
-    .style('font-size', legendFontSize)
-    .text('Change -');
-
-  return null; // This component doesn't render JSX, it manipulates D3
+  return null;
 };
 
-export default PersonnelChart; 
+export default PersonnelChart;

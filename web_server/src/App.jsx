@@ -14,18 +14,29 @@ function Dashboard() {
   }, []);
 
   const [loading, setLoading] = useState(false); // regionNames now comes from props
-  const [summary, setSummary] = useState('');
+  const [summaryRows, setSummaryRows] = useState([]);
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [header, setHeader] = useState([]);
   const navigate = useNavigate();
   const [selectedRegion, setSelectedRegion] = useState(null);
   const params = useParams(); // <-- Add this line
-  const { regionNames, loading: regionNamesLoading } = useRegionNames();
+  const { regionNames, regionFileIds, loading: regionNamesLoading } = useRegionNames();
   const [isMobile, setIsMobile] = useState(false);
-  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
 
   // Dynamically generate regions array from regionNames keys
   const regions = Object.keys(regionNames).map(key => parseInt(key)).sort((a, b) => a - b);
+  const sitReportHeaderRows = useMemo(() => {
+    const [reportTitle = '', issuedAt = '', preparednessLevel = ''] = header;
+
+    return [
+      { label: 'Report', value: reportTitle.trim() || 'Unavailable' },
+      { label: 'Issued', value: issuedAt.trim() || 'Unavailable' },
+      { label: 'Preparedness Level', value: preparednessLevel.trim() || 'Unavailable' }
+    ];
+  }, [header]);
+  const sitReportRows = useMemo(() => {
+    return [...sitReportHeaderRows, ...summaryRows];
+  }, [sitReportHeaderRows, summaryRows]);
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -41,10 +52,6 @@ function Dashboard() {
   const handleRegionSelect = (region) => {
     setSelectedRegion(region);
   }
-
-  const toggleSummary = () => {
-    setIsSummaryExpanded(!isSummaryExpanded);
-  };
 
   useEffect(() => {
     if (params.region) {
@@ -73,23 +80,71 @@ function Dashboard() {
         line.includes('NIMOs committed:') ? [line, ''] : [line]
       )
       .join('\n');
-    setSummary(cleanSummary);
+    setSummaryRows(parseSummaryRows(cleanSummary));
     setSummaryLoading(false);
   }
 
-  
+  const parseSummaryRows = (summaryText) => {
+    return summaryText
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [label, ...valueParts] = line.split(':');
+        const value = valueParts.join(':').trim();
+
+        if (!value) {
+          return null;
+        }
+
+        return {
+          label: label.replace(/\s+/g, ' ').trim(),
+          value: value.replace(/\s+/g, ' ').trim()
+        };
+      })
+      .filter(Boolean);
+  };
+
+  const renderSitReportTable = () => (
+    <table className="sit-report-header-table fire-activity-table" aria-label="SIT report summary">
+      <tbody>
+        {sitReportRows.map((row, index) => (
+          <tr key={`${row.label}-${index}`}>
+            <th scope="row">{row.label}</th>
+            <td>{row.value}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
 
   useEffect(() => {
-    fetch(`/data/${today}/daily_summary.json`)
-      .then(response => response.json())
+    const dailySummaryUrl = `/data/${today}/daily_summary.json`;
+    console.log('[init data fetch] daily summary start', { today, url: dailySummaryUrl });
+
+    fetch(dailySummaryUrl)
+      .then(response => {
+        console.log('[init data fetch] daily summary response', {
+          url: dailySummaryUrl,
+          status: response.status,
+          ok: response.ok
+        });
+
+        if (!response.ok) {
+          throw new Error(`Daily summary request failed with status ${response.status}`);
+        }
+
+        return response.json();
+      })
       .then(data => {
+        console.log('[init data fetch] daily summary json', data);
         setHeader(data.header || []);
         cleanSummaryString(data); 
       }
         )
       .catch(error => {
         console.error('Error loading daily summary:', error);
-        setSummary('Summary not available.');
+        setSummaryRows([{ label: 'Summary', value: 'Not available.' }]);
         setSummaryLoading(false);
       });
   }, [today]);
@@ -108,61 +163,41 @@ function Dashboard() {
 
   return (
     <main>
-      {/* Welcome Section */}
-      <div className="welcome-section">
-      <h1>NIFC daily SIT report graphs</h1>
-        <h2 className="predictive-summary-label">Incident Graphs are updated daily at 7:30am MDT.</h2>
-        <div className="predictive-summary-text mobile-header-content">{header.join('\n')}</div>
-        
-        {/* Mobile expandable summary */}
-        {isMobile ? (
-          <div className="mobile-summary-container">
-            {!isSummaryExpanded && (
-              <button 
-                className={`mobile-summary-toggle ${isSummaryExpanded ? 'expanded' : ''}`}
-                onClick={toggleSummary}
-              >
-                {isSummaryExpanded ? 'Show Less' : 'Show More'}
-              </button>
-            )}
-            {isSummaryExpanded && (
-              <div className="predictive-summary-text expanded">
-                <div className="predictive-summary-text mobile-header-content">{summary}</div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="predictive-summary-text">{summary}</div>
-        )}
-      </div>
-      {/* Daily Summary Block */}
+      <section className="landing-grid" aria-label="Daily national fire overview">
+        <div className="welcome-section">
+          <h1>NIFC daily SIT report graphs</h1>
+          <h2 className="predictive-summary-label">Incident Graphs are updated daily at 7:30am MDT.</h2>
+          {renderSitReportTable()}
+        </div>
 
-      {/* Summary Graph Row */}
-
-      {/* Divider between summary and regions */}
-      <hr className="divider" />
-      {/* Region Graphs Container */}
-      <div className="graphs-container">
-      <div className="graph-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
+        <div className="graph-card national-landing-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
           <h2>National Fire Summary</h2>
           <div className="graph-wrapper">
             <NationalAcresChart isMobile={isMobile} today={today}/>
           </div>
         </div>
-        {regions.map((region) => (
-          <div key={region} onClick={() => navigate(`/region/${region}`)} className="graph-card">
-            <h2>{regionNames[region] || `Region ${region}`}</h2>
-            <div className="graph-wrapper">
-              <RegionAcresChart 
-                regionId={region} 
-                regionName={regionNames[region] || `Region ${region}`}
-                today={today}
-                isMobile={isMobile}
-              />
+      </section>
+
+      <section className="regions-section" aria-label="Regional fire summaries">
+        <div className="regions-section-header">
+          <h2>Regions</h2>
+        </div>
+        <div className="graphs-container">
+          {regions.map((region) => (
+            <div key={region} onClick={() => navigate(`/region/${region}`)} className="graph-card">
+              <h2>{regionNames[region] || `Region ${region}`}</h2>
+              <div className="graph-wrapper">
+                <RegionAcresChart
+                  regionId={regionFileIds[region] || region}
+                  regionName={regionNames[region] || `Region ${region}`}
+                  today={today}
+                  isMobile={isMobile}
+                />
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
     </main>
   )
 }

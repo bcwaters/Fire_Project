@@ -1,0 +1,42 @@
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    server_name _;
+
+    root /var/www/wildfiregraphs/html;
+    index index.html;
+
+    location = /miniserver {
+        return 301 /miniserver/;
+    }
+
+    location /miniserver/ {
+        proxy_pass http://10.0.0.38/;
+        proxy_http_version 1.1;
+        proxy_set_header Host 10.0.0.38;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location /data/ {
+        alias /var/www/wildfiregraphs/data/;
+        expires 1h;
+        add_header Cache-Control "public, max-age=3600";
+        try_files $uri =404;
+    }
+
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+}

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
+import * as d3 from 'd3';
 import AcresChart from './AcresChart';
 import PersonnelChart from './PersonnelChart';
 import ResourcesChart from './ResourcesChart';
-import DetailsTable from './DetailsTable';
 import '../styles/ChartComponentContainer.css';
 
 const ChartComponentContainer = ({ 
@@ -10,17 +10,18 @@ const ChartComponentContainer = ({
   regionId, 
   headerData, 
   isRegional = true,
-  className = "chart-component-container"
+  className = "chart-component-container",
+  topLeftContent = null
 }) => {
   const acresSvgRef = useRef();
   const personnelSvgRef = useRef();
   const resourcesSvgRef = useRef();
-  const detailsSvgRef = useRef();
   const containerRef = useRef();
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [resizeKey, setResizeKey] = useState(0); // Add key to force re-render on resize
   const [chartHeight, setChartHeight] = useState(350); // Default height
+  const [processedDataRows, setProcessedDataRows] = useState([]);
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -107,7 +108,13 @@ const ChartComponentContainer = ({
   }, [data]);
 
   useEffect(() => {
+    setLoading(true);
+
     if (!data || data.length === 0) {
+      setProcessedDataRows([]);
+      d3.select(acresSvgRef.current).selectAll("*").remove();
+      d3.select(personnelSvgRef.current).selectAll("*").remove();
+      d3.select(resourcesSvgRef.current).selectAll("*").remove();
       setLoading(false);
       return;
     }
@@ -138,6 +145,7 @@ const ChartComponentContainer = ({
           engines: parseInt(incident['Engines']) || 0,
           helicopters: parseInt(incident['Helicopters']) || 0
         }));
+    setProcessedDataRows(processedData);
 
     // Responsive dimensions for individual charts
     let containerWidth;
@@ -180,13 +188,6 @@ const ChartComponentContainer = ({
     // Clear and create Resources Chart SVG
     d3.select(resourcesSvgRef.current).selectAll("*").remove();
     const resourcesSvg = d3.select(resourcesSvgRef.current)
-      .attr('width', chartWidth)
-      .attr('height', chartHeight)
-      .append('g');
-
-    // Clear and create Details Table SVG
-    d3.select(detailsSvgRef.current).selectAll("*").remove();
-    const detailsSvg = d3.select(detailsSvgRef.current)
       .attr('width', chartWidth)
       .attr('height', chartHeight)
       .append('g');
@@ -242,23 +243,10 @@ const ChartComponentContainer = ({
       isMobile: isMobile
     });
     
-    // Chart 4: Details Table
-    DetailsTable({ 
-      svg: detailsSvg,
-      data: processedData, 
-      width: chartWidth, 
-      height: chartHeight, 
-      xOffset: 0, 
-      yOffset: 0,
-      title: 'Details',
-      isRegional: isRegional,
-      isMobile: isMobile
-    });
-
     setLoading(false);
   }, [data, regionId, headerData, isRegional, isMobile,  chartHeight]);
 
-  if (loading) {
+  if (loading && (!data || data.length === 0)) {
     return <div>Loading chart...</div>;
   }
 
@@ -266,32 +254,66 @@ const ChartComponentContainer = ({
     return <div>No data available{isRegional ? ' for this region.' : ' for national summary.'}</div>;
   }
 
+  const chartItemHeight = chartHeight + 50;
+  const hasTopLeftContent = Boolean(topLeftContent);
+
+  const formatDetailValue = (value) => {
+    if (typeof value === 'number') return value.toLocaleString();
+    return value || 'N/A';
+  };
+
+  const renderDetailSentence = (row, rowIndex) => {
+    if (isRegional) {
+      return (
+        <p key={`${row.name}-${rowIndex}`}>
+          <strong>{row.name}:</strong> Currently {formatDetailValue(row.containedPercent)}% contained at a cost of {formatDetailValue(row.costToDate)} with {formatDetailValue(row.personnel)} personnel made up of {formatDetailValue(row.crews)} crews, {formatDetailValue(row.engines)} engines, and {formatDetailValue(row.helicopters)} helicopters.
+        </p>
+      );
+    }
+
+    return (
+      <p key={`${row.name}-${rowIndex}`}>
+        <strong>{row.name}:</strong> Currently reporting {formatDetailValue(row.incidents)} incidents and {formatDetailValue(row.totalAcres)} acres with {formatDetailValue(row.personnel)} personnel, {formatDetailValue(row.crews)} crews, {formatDetailValue(row.engines)} engines, {formatDetailValue(row.helicopters)} helicopters, and a personnel change of {formatDetailValue(row.changePersonnel)}.
+      </p>
+    );
+  };
+
   return (
     <div className={className} ref={containerRef}>
-      <div className={`chart-grid ${isMobile ? 'mobile' : 'desktop'}`}>
+      <div className={`chart-grid ${isMobile ? 'mobile' : 'desktop'} ${hasTopLeftContent ? 'regional-detail-layout' : ''}`}>
+        {hasTopLeftContent && (
+          <div className="chart-item region-summary-grid-item">
+            {topLeftContent}
+          </div>
+        )}
         <div 
-          className="chart-item" 
-          style={{ height: chartHeight + 50 + 'px' }}
+          className="chart-item acres-chart-item"
+          style={{ height: chartItemHeight + 'px' }}
         >
-          <svg ref={acresSvgRef} style={{ height: chartHeight + 50 + 'px' }}></svg>
+          <svg ref={acresSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
         </div>
         <div 
-          className="chart-item" 
-          style={{ height: chartHeight + 50 + 'px' }}
+          className="chart-item details-chart-item"
         >
-          <svg ref={personnelSvgRef} style={{ height: chartHeight + 50 + 'px' }}></svg>
+          <div className="details-html-table-container">
+            <div className="details-sentence-list">
+              {processedDataRows.map(renderDetailSentence)}
+            </div>
+          </div>
         </div>
-        <div 
-          className="chart-item" 
-          style={{ height: chartHeight + 50 + 'px' }}
-        >
-          <svg ref={resourcesSvgRef} style={{ height: chartHeight + 50 + 'px' }}></svg>
-        </div>
-        <div 
-          className="chart-item" 
-          style={{ height: chartHeight + 50 + 'px' }}
-        >
-          <svg ref={detailsSvgRef} style={{ height: chartHeight + 50 + 'px' }}></svg>
+        <div className="chart-column-stack personnel-resources-stack">
+          <div 
+            className="chart-item personnel-chart-item"
+            style={{ height: chartItemHeight + 'px' }}
+          >
+            <svg ref={personnelSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
+          </div>
+          <div 
+            className="chart-item resources-chart-item"
+            style={{ height: chartItemHeight + 'px' }}
+          >
+            <svg ref={resourcesSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
+          </div>
         </div>
       </div>
     </div>

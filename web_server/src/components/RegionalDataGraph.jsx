@@ -3,7 +3,7 @@ import ChartContainerDownload from './ChartContainerDownload';
 import ChartComponentContainer from './ChartComponentContainer';
 import '../styles/RegionalDataGraph.css';
 
-const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => {
+const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph, topLeftContent = null }) => {
   const chartContainerRef = useRef();
   const [showDownloadContainer, setShowDownloadContainer] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -64,7 +64,9 @@ const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => 
   };
 
   useEffect(() => {
-    setDownloadGraph(saveAsSVG);
+    if (setDownloadGraph) {
+      setDownloadGraph(saveAsSVG);
+    }
   }, []); // Empty dependency array since we only want to set it once
 
   return (
@@ -75,6 +77,7 @@ const RegionalDataGraph = ({ regionId, data, headerData, setDownloadGraph }) => 
         headerData={headerData}
         isRegional={true}
         className="regional-data-graph"
+        topLeftContent={topLeftContent}
       />
       <div 
         ref={chartContainerRef} 

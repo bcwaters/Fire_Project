@@ -13,12 +13,9 @@ export default defineConfig({
       }
     }
   },
-  // For development only - remove for production
   server: {
     fs: {
       allow: ['..']
     }
-  },
-  // Serve data directory as static files
-  publicDir: '../data'
+  }
 })

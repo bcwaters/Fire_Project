@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import * as d3 from 'd3';
 import AcresChart from './AcresChart';
 import PersonnelChart from './PersonnelChart';
 import ResourcesChart from './ResourcesChart';
@@ -118,7 +119,7 @@ const ChartContainerDownload = ({
     const svg = d3.select(svgRef.current)
       .attr('width', isMobile ? 500: width)
       .attr('height', height)
-      .style('background-color', 'white')
+      .style('background-color', '#f5f5f5')
       .append('g');
 
     // Create chart container IDs for individual components
