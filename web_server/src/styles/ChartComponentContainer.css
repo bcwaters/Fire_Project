@@ -20,8 +20,8 @@
 }
 
 .chart-grid.desktop.regional-detail-layout {
-  grid-template-columns: minmax(320px, 0.95fr) minmax(420px, 1.05fr);
-  align-items: start;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(420px, 1.1fr);
+  align-items: stretch;
 }
 
 .chart-item {
@@ -41,6 +41,24 @@
   display: grid;
   gap: 20px;
   width: 100%;
+}
+
+.regional-graph-stack {
+  align-self: stretch;
+}
+
+.modal-trigger-chart {
+  cursor: pointer;
+}
+
+.modal-trigger-chart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 18px rgba(36, 31, 24, 0.12);
+}
+
+.modal-trigger-chart:focus-visible {
+  outline: 3px solid rgba(214, 106, 31, 0.32);
+  outline-offset: 2px;
 }
 
 .details-chart-item {
@@ -110,7 +128,8 @@
 }
 
 .region-summary-grid-item {
-  height: 400px;
+  align-self: stretch;
+  height: auto;
   overflow: auto;
   background: #f5f5f5;
 }

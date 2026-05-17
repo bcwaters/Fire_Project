@@ -2,7 +2,7 @@ import React from 'react';
 import * as d3 from 'd3';
 import { addHorizontalGrid, chartColors, chartFontFamily, formatTickLabel, styleAxes } from './chartStyle';
 
-const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total Acres and Containment', showContainment = true, isMobile = false }) => {
+const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total Acres and Containment', showContainment = true, isMobile = false, primaryLabel = 'Acres' }) => {
   const chartGroup = svg.append('g')
     .attr('transform', `translate(${xOffset}, ${yOffset})`);
 
@@ -139,7 +139,7 @@ const AcresChart = ({ svg, data, width, height, xOffset, yOffset, title = 'Total
     .style('font-size', legendFontSize)
     .style('font-family', chartFontFamily)
     .style('fill', chartColors.text)
-    .text('Acres');
+    .text(primaryLabel);
 
   if (showContainment && data[0].containedPercent !== undefined) {
     legend.append('rect')

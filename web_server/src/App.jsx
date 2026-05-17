@@ -1,27 +1,27 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import RegionDetail from './RegionDetail.jsx'
 import Layout from './Layout.jsx'
 import './styles/App.css'
-import NationalSummary from './NationalSummary.jsx'
 import { RegionProvider, useRegionNames } from './RegionContext.jsx'
 import NationalAcresChart from './components/NationalAcresChart.jsx'
 import RegionAcresChart from './components/RegionAcresChart.jsx'
+import HomeNationalResourceCharts from './components/HomeNationalResourceCharts.jsx'
 
 function Dashboard() {
   const today = useMemo(() => {
     return new Date().toISOString().slice(0, 10).replace(/-/g, '');
   }, []);
 
-  const [loading, setLoading] = useState(false); // regionNames now comes from props
+  const [loading] = useState(false); // regionNames now comes from props
   const [summaryRows, setSummaryRows] = useState([]);
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [totalAcres, setTotalAcres] = useState(null);
   const [totalAcresLoading, setTotalAcresLoading] = useState(true);
+  const [nationalRows, setNationalRows] = useState([]);
+  const [showNationalRowsModal, setShowNationalRowsModal] = useState(false);
   const [header, setHeader] = useState([]);
   const navigate = useNavigate();
-  const [selectedRegion, setSelectedRegion] = useState(null);
-  const params = useParams(); // <-- Add this line
   const { regionNames, regionFileIds, loading: regionNamesLoading } = useRegionNames();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -54,25 +54,13 @@ function Dashboard() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleRegionSelect = (region) => {
-    setSelectedRegion(region);
-  }
-
-  useEffect(() => {
-    if (params.region) {
-      navigate(`/region/${params.region}`);
-    }else{
-      setSelectedRegion(""); // <-- Fix function name
-    }
-  }, [params.region]);
-
   const cleanSummaryString = (data) => {
 
     let cleanSummary = data.summary.replace(/Understanding the IMSR\s*/g, '').replace(/IMSR Map\s*/g, '');
     // Remove "Fire Activity and Teams Assigned Totals"
     cleanSummary = cleanSummary.replace(/Fire Activity and Teams Assigned Totals\s*/g, '');
     // Remove the Comp fires block
-    const compFiresRegex = /Fires not managed under a full suppression strategy[\s\S]*?can be found in the NWCG glossary  or here/;
+    const compFiresRegex = /Fires not managed under a full suppression strategy[\s\S]*?can be found in the NWCG glossary\s\sor here/;
     cleanSummary = cleanSummary.replace(compFiresRegex, '').trim();
     // Filter out lines with 3 or fewer characters
     cleanSummary = cleanSummary
@@ -110,18 +98,35 @@ function Dashboard() {
       .filter(Boolean);
   };
 
-  const renderSitReportTable = () => (
-    <table className="sit-report-header-table fire-activity-table" aria-label="SIT report summary">
-      <tbody>
-        {sitReportRows.map((row, index) => (
-          <tr key={`${row.label}-${index}`}>
-            <th scope="row">{row.label}</th>
-            <td>{row.value}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+  const renderSitReportSummary = () => (
+    <div className="sit-report-sentence-list" aria-label="SIT report summary">
+      {sitReportRows.map((row, index) => (
+        <p key={`${row.label}-${index}`}>
+          <strong>{row.label}:</strong> {row.value}
+        </p>
+      ))}
+    </div>
   );
+
+  const formatDetailValue = (value) => {
+    if (typeof value === 'number') return value.toLocaleString();
+    return value || 'N/A';
+  };
+
+  const nationalRegionLineItems = useMemo(() => {
+    return nationalRows
+      .map(row => ({
+        name: row['GACC'] || 'Unknown',
+        incidents: parseInt(row['Incidents']) || 0,
+        acres: parseInt((row['Cumulative Acres'] || '0').replace(/,/g, '')) || 0,
+        personnel: parseInt((row['Total Personnel'] || '0').replace(/,/g, '')) || 0,
+        crews: parseInt(row['Crews']) || 0,
+        engines: parseInt(row['Engines']) || 0,
+        helicopters: parseInt(row['Helicopters']) || 0,
+        changePersonnel: parseInt((row['Change in Personnel'] || '0').replace(/,/g, '')) || 0
+      }))
+      .filter(row => row.name !== 'Unknown' && row.name !== 'Total');
+  }, [nationalRows]);
 
   useEffect(() => {
     const dailySummaryUrl = `/data/${today}/daily_summary.json`;
@@ -167,6 +172,7 @@ function Dashboard() {
         return response.json();
       })
       .then(data => {
+        setNationalRows(data);
         const acres = data.reduce((sum, row) => {
           const value = parseFloat((row['Cumulative Acres'] || '0').replace(/,/g, '')) || 0;
           return sum + value;
@@ -176,6 +182,7 @@ function Dashboard() {
       })
       .catch(error => {
         console.error('Error loading national total acres:', error);
+        setNationalRows([]);
         setTotalAcres(null);
       })
       .finally(() => {
@@ -199,18 +206,37 @@ function Dashboard() {
     <main>
       <section className="landing-grid" aria-label="Daily national fire overview">
         <div className="welcome-section">
-          <h1>NIFC daily SIT report graphs</h1>
-          <h2 className="predictive-summary-label">Incident Graphs are updated daily at 7:30am MDT.</h2>
-          {renderSitReportTable()}
+          {renderSitReportSummary()}
         </div>
 
-        <div className="graph-card national-landing-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/national')}>
-          <h2>National Fire Summary</h2>
+        <div className="graph-card national-landing-card" style={{ cursor: 'pointer' }} onClick={() => setShowNationalRowsModal(true)}>
           <div className="graph-wrapper">
             <NationalAcresChart isMobile={isMobile} today={today}/>
           </div>
         </div>
       </section>
+
+      {showNationalRowsModal && (
+        <div className="modal-overlay" onClick={() => setShowNationalRowsModal(false)}>
+          <div className="modal-content national-line-items-modal" role="dialog" aria-modal="true" aria-labelledby="national-line-items-title" onClick={(event) => event.stopPropagation()}>
+            <div className="modal-header">
+              <h3 id="national-line-items-title">Incidents by GACC</h3>
+              <button className="close-button" type="button" aria-label="Close" onClick={() => setShowNationalRowsModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="details-sentence-list">
+                {nationalRegionLineItems.map((row) => (
+                  <p key={row.name}>
+                    <strong>{row.name}:</strong> Currently reporting {formatDetailValue(row.incidents)} incidents and {formatDetailValue(row.acres)} acres with {formatDetailValue(row.personnel)} personnel, {formatDetailValue(row.crews)} crews, {formatDetailValue(row.engines)} engines, {formatDetailValue(row.helicopters)} helicopters, and a personnel change of {formatDetailValue(row.changePersonnel)}.
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <HomeNationalResourceCharts today={today} />
 
       <section className="regions-section" aria-label="Regional fire summaries">
         <div className="regions-section-header">
@@ -219,7 +245,6 @@ function Dashboard() {
         <div className="graphs-container">
           {regions.map((region) => (
             <div key={region} onClick={() => navigate(`/region/${region}`)} className="graph-card">
-              <h2>{regionNames[region] || `Region ${region}`}</h2>
               <div className="graph-wrapper">
                 <RegionAcresChart
                   regionId={regionFileIds[region] || region}
@@ -248,7 +273,6 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="region/:regionId" element={<RegionDetail today={today} />} />
-            <Route path="national" element={<NationalSummary today={today} />} />
           </Route>
         </Routes>
       </BrowserRouter>

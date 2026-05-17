@@ -61,7 +61,7 @@ import AcresChart from './AcresChart';
           helicopters: 0
         };
       }
-    }).filter(item => item.name !== 'Unknown' && item.incidents > 0);
+    }).filter(item => item.name !== 'Unknown' && item.name !== 'Total' && item.incidents > 0);
 
     // Responsive dimensions
     const containerElement = svgRef.current?.parentElement;
@@ -87,7 +87,8 @@ import AcresChart from './AcresChart';
       yOffset: 0,
       title: 'National Fire Summary - Incidents by GACC',
       showContainment: false,
-      isMobile: isMobile
+      isMobile: isMobile,
+      primaryLabel: 'Number of incidents'
     });
 
   }, [data, isMobile]);

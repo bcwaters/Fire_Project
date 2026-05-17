@@ -22,6 +22,7 @@ const ChartComponentContainer = ({
   const [resizeKey, setResizeKey] = useState(0); // Add key to force re-render on resize
   const [chartHeight, setChartHeight] = useState(350); // Default height
   const [processedDataRows, setProcessedDataRows] = useState([]);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -286,36 +287,112 @@ const ChartComponentContainer = ({
             {topLeftContent}
           </div>
         )}
-        <div 
-          className="chart-item acres-chart-item"
-          style={{ height: chartItemHeight + 'px' }}
-        >
-          <svg ref={acresSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
-        </div>
-        <div 
-          className="chart-item details-chart-item"
-        >
-          <div className="details-html-table-container">
-            <div className="details-sentence-list">
-              {processedDataRows.map(renderDetailSentence)}
+        {hasTopLeftContent ? (
+          <div className="chart-column-stack regional-graph-stack">
+            <div
+              className="chart-item acres-chart-item modal-trigger-chart"
+              role="button"
+              tabIndex={0}
+              aria-label="Show incident line items"
+              style={{ height: chartItemHeight + 'px' }}
+              onClick={() => setShowDetailsModal(true)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  setShowDetailsModal(true);
+                }
+              }}
+            >
+              <svg ref={acresSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
+            </div>
+            <div
+              className="chart-item personnel-chart-item modal-trigger-chart"
+              role="button"
+              tabIndex={0}
+              aria-label="Show incident line items"
+              style={{ height: chartItemHeight + 'px' }}
+              onClick={() => setShowDetailsModal(true)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  setShowDetailsModal(true);
+                }
+              }}
+            >
+              <svg ref={personnelSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
+            </div>
+            <div
+              className="chart-item resources-chart-item modal-trigger-chart"
+              role="button"
+              tabIndex={0}
+              aria-label="Show incident line items"
+              style={{ height: chartItemHeight + 'px' }}
+              onClick={() => setShowDetailsModal(true)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  setShowDetailsModal(true);
+                }
+              }}
+            >
+              <svg ref={resourcesSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div
+              className="chart-item acres-chart-item"
+              style={{ height: chartItemHeight + 'px' }}
+            >
+              <svg ref={acresSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
+            </div>
+            <div
+              className="chart-item details-chart-item"
+            >
+              <div className="details-html-table-container">
+                <div className="details-sentence-list">
+                  {processedDataRows.map(renderDetailSentence)}
+                </div>
+              </div>
+            </div>
+            <div className="chart-column-stack personnel-resources-stack">
+              <div
+                className="chart-item personnel-chart-item"
+                style={{ height: chartItemHeight + 'px' }}
+              >
+                <svg ref={personnelSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
+              </div>
+              <div
+                className="chart-item resources-chart-item"
+                style={{ height: chartItemHeight + 'px' }}
+              >
+                <svg ref={resourcesSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+      {showDetailsModal && (
+        <div className="modal-overlay" onClick={() => setShowDetailsModal(false)}>
+          <div 
+            className="modal-content regional-line-items-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="regional-line-items-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h3 id="regional-line-items-title">Incident line items</h3>
+              <button className="close-button" type="button" aria-label="Close" onClick={() => setShowDetailsModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="details-sentence-list">
+                {processedDataRows.map(renderDetailSentence)}
+              </div>
             </div>
           </div>
         </div>
-        <div className="chart-column-stack personnel-resources-stack">
-          <div 
-            className="chart-item personnel-chart-item"
-            style={{ height: chartItemHeight + 'px' }}
-          >
-            <svg ref={personnelSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
-          </div>
-          <div 
-            className="chart-item resources-chart-item"
-            style={{ height: chartItemHeight + 'px' }}
-          >
-            <svg ref={resourcesSvgRef} style={{ height: chartItemHeight + 'px' }}></svg>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

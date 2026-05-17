@@ -1,6 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import './styles/App.css';
-import { useState, useEffect } from 'react';
 import fireGraphIcon from './assets/fire_graph_icon.png';
 import { useRegionNames } from './RegionContext.jsx';
 
@@ -27,11 +26,6 @@ function Layout() {
   };
 
 
-  const handleMobileRegionSelect = (region) => {
-    navigate(`/region/${region}`);
-
-  };
-
   // Show loading state while region names are being fetched
   if (regionNamesLoading) {
     return (
@@ -54,7 +48,7 @@ function Layout() {
               className="header-icon"
               onClick={() => navigate('/')}
             />
-            
+            <h1 className="navbar-title">NIFC Daily SIT report</h1>
           </div>
           {/* Desktop dropdown */}
           <select onChange={handleRegionChange} value={selectedRegion} className="region-dropdown hide-on-mobile">
